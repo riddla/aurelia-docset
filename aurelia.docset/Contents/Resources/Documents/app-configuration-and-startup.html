@@ -1,0 +1,436 @@
+<hr>
+<p>{
+  &quot;name&quot;: &quot;App Configuration and Startup&quot;,
+  &quot;culture&quot;: &quot;en-US&quot;,
+  &quot;description&quot;: &quot;In this article you&#39;ll learn the various ways to bootstrap and configure Aurelia, along with different mechanisms for controlling the initial render strategy.&quot;,
+  &quot;engines&quot; : { &quot;aurelia-doc&quot; : &quot;^1.0.0&quot; },
+  &quot;author&quot;: {
+      &quot;name&quot;: &quot;Rob Eisenberg&quot;,
+      &quot;url&quot;: &quot;<a href="http://robeisenberg.com">http://robeisenberg.com</a>&quot;
+  },
+  &quot;contributors&quot;: [],
+  &quot;translators&quot;: [],
+  &quot;keywords&quot;: [&quot;Framework&quot;, &quot;Configuration&quot;, &quot;Startup&quot;]</p>
+<h2 id="-">}</h2>
+<h2 id="-bootstrapping-aurelia-aurelia-doc-section-1-version-1-0-0-"><a href="aurelia-doc://section/1/version/1.0.0">Bootstrapping Aurelia</a></h2>
+<p>Most platforms have a &quot;main&quot; or entry point for code execution. Aurelia is no different. If you&#39;ve read the Getting Started Guide, then you&#39;ve seen the <code>aurelia-app</code> attribute. Simply place this on an HTML element and Aurelia&#39;s bootstrapper will load an <em>app${context.language.fileExtension}</em> and <em>app.html</em>, databind them together and inject them into the DOM element on which you placed that attribute.</p>
+<p>Often times you want to configure the framework or run some code prior to displaying anything to the user though. So chances are, as your project progresses, you will migrate towards needing some startup configuration. In order to do this, you can provide a value for the <code>aurelia-app</code> attribute that points to a configuration module. This module should export a single function named <code>configure</code>. Aurelia invokes your <code>configure</code> function, passing it the Aurelia object which you can then use to configure the framework yourself and decide what, when, and where to display your UI. Here&#39;s an example configuration file showing the standard configuration, the same configuration that is equivalent to what you would get when using <code>aurelia-app</code> without a value:</p>
+<p><code-listing heading="Standard Configuration">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging();</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>;
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>So, if you want to keep all the default settings, it&#39;s really easy. Just call <code>standardConfiguration()</code> to configure the standard set of plugins. Then call <code>developmentLogging()</code> to turn on logging in debug mode, output to the <code>console</code>.</p>
+<p>The <code>use</code> property on the <code>aurelia</code> instance is an instance of <code>FrameworkConfiguration</code>. It has many helper methods for configuring Aurelia. For example, if you wanted to manually configure all the standard plugins without using the <code>standardConfiguration()</code> helper method to do so and you wanted to configure logging without using the helper method for that, this is how you would utilize the <code>FrameworkConfiguration</code> instance:</p>
+<p><code-listing heading="Manual Configuration">
+  <source-code lang="ES 2015/2016">
+    import {LogManager} from &#39;aurelia-framework&#39;;
+    import {ConsoleAppender} from &#39;aurelia-logging-console&#39;;</p>
+<pre><code><span class="hljs-type">LogManager</span>.addAppender(new <span class="hljs-type">ConsoleAppender</span><span class="hljs-literal">()</span>);
+<span class="hljs-type">LogManager</span>.setLevel(<span class="hljs-type">LogManager</span>.logLevel.debug);
+
+export function configure(aurelia) {
+  aurelia.use
+    .defaultBindingLanguage<span class="hljs-literal">()</span>
+    .defaultResources<span class="hljs-literal">()</span>
+    .history<span class="hljs-literal">()</span>
+    .router<span class="hljs-literal">()</span>
+    .eventAggregator<span class="hljs-literal">()</span>;
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia, LogManager} from &#39;aurelia-framework&#39;;
+    import {ConsoleAppender} from &#39;aurelia-logging-console&#39;;</p>
+<pre><code><span class="hljs-type">LogManager</span>.addAppender(new <span class="hljs-type">ConsoleAppender</span><span class="hljs-literal">()</span>);
+<span class="hljs-type">LogManager</span>.setLevel(<span class="hljs-type">LogManager</span>.logLevel.debug);
+
+export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .defaultBindingLanguage<span class="hljs-literal">()</span>
+    .defaultResources<span class="hljs-literal">()</span>
+    .history<span class="hljs-literal">()</span>
+    .router<span class="hljs-literal">()</span>
+    .eventAggregator<span class="hljs-literal">()</span>;
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>You can see that this code configures the default data-binding language (.bind, .trigger, etc.), the default set of view resources (repeat, if, compose, etc.) the history module (integration with the browser&#39;s history API), the router (mapping routes to components) and the event aggregator (app-wide pub/sub messaging). If, for example, you were building an app that didn&#39;t need to use the router or event aggregator, but did want debug logging, you could do that very easily with this configuration:</p>
+<p><code-listing heading="Minimal Configuration">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .defaultBindingLanguage()
+        .defaultResources()
+        .developmentLogging();</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .defaultBindingLanguage<span class="hljs-literal">()</span>
+    .defaultResources<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>;
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>Once you&#39;ve configured the framework, you need to start things up by calling <code>aurelia.start()</code>. This API returns a promise. Once it&#39;s resolved, the framework is ready, including all plugins, and it is now safe to ineract with the services and begin rendering.</p>
+<h2 id="-rendering-the-root-component-aurelia-doc-section-2-version-1-0-0-"><a href="aurelia-doc://section/2/version/1.0.0">Rendering the Root Component</a></h2>
+<p>The root component is set by calling <code>aurelia.setRoot()</code>. If no values are provided, this defaults to treating the element with the <code>aurelia-app</code> attribute as the DOM host for your app and <code>app${context.language.fileExtension}</code>/<code>app.html</code> as the source for the root component. However, you can specify whatever you want, just like this:</p>
+<p><code-listing heading="Manual Root Component">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging();</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot(<span class="hljs-symbol">'my</span>-root', document.getElementById(<span class="hljs-symbol">'some</span>-element'));
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>;
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot(<span class="hljs-symbol">'my</span>-root', document.getElementById(<span class="hljs-symbol">'some</span>-element'));
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>This causes the <code>my-root${context.language.fileExtension}</code>/<code>my-root.html</code> to be loaded as the root component and injected into the <code>some-element</code> HTML element.</p>
+<h2 id="-bootstrapping-older-browsers-aurelia-doc-section-3-version-1-0-0-"><a href="aurelia-doc://section/3/version/1.0.0">Bootstrapping Older Browsers</a></h2>
+<p>Aurelia was originally designed for Evergreen Browsers. This includes Chrome, Firefox, IE11 and Safari 8. However, we also support IE9 and above through the use of additional polyfills. To support these earlier browsers, you need to add an additional polyfill for MutationObservers. This can be achieved by a jspm install of <code>github:polymer/mutationobservers</code>. Then change your <code>index.html</code> startup code as follows:</p>
+<p><code-listing heading="Polyfill Configuration">
+  <source-code lang="HTML">
+    &lt;!doctype html&gt;
+    <html>
+      <head>
+        <title>My App</title>
+      </head>
+      <body>
+        <script src="jspm_packages/system.js"></script>
+        <script src="config.js"></script>
+        <script>
+          SystemJS.import(&#39;core-js&#39;).then(function() {
+            return SystemJS.import(&#39;polymer/mutationobservers&#39;);
+          }).then(function() {
+            SystemJS.import(&#39;aurelia-bootstrapper&#39;);
+          });
+        </script>
+      </body>
+    </html>
+  </source-code>
+</code-listing></p>
+<blockquote>
+<p>Warning: Promises in Edge
+Currently, the Edge browser has a serious performance problem with its Promise implementation. This deficiency can greatly increase startup time of your app. If you are targeting the Edge browser, it is highly recommended that you use the <a href="http://bluebirdjs.com/docs/getting-started.html">bluebird promise</a> library to replace Edge&#39;s native implementation. You can do this by simply referencing the library prior to loading system.js.</p>
+</blockquote>
+<h2 id="-manual-bootstrapping-aurelia-doc-section-4-version-1-0-0-"><a href="aurelia-doc://section/4/version/1.0.0">Manual Bootstrapping</a></h2>
+<p>So far, we&#39;ve been bootstrapping our app declaratively by using the <code>aurelia-app</code> attribute. That&#39;s not the only way though. You can manually bootstrap the framework as well. Here&#39;s how you would change your HTML file to use manual bootstrapping:</p>
+<p><code-listing heading="Manual Bootstrapping">
+  <source-code lang="HTML">
+    &lt;!doctype html&gt;
+    <html>
+      <head>
+        <title>My App</title>
+      </head>
+      <body>
+        <script src="jspm_packages/system.js"></script>
+        <script src="config.js"></script>
+        <script>
+          SystemJS.import(&#39;aurelia-bootstrapper&#39;).then(bootstrapper =&gt; {
+            bootstrapper.bootstrap(function(aurelia) {
+              aurelia.use
+                .standardConfiguration()
+                .developmentLogging();</p>
+<pre><code>          aurelia.start().<span class="hljs-keyword">then</span>(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> aurelia.setRoot(<span class="hljs-string">'app'</span>, <span class="hljs-built_in">document</span>.body));
+        });
+      });
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>The function you pass to the <code>bootstrap</code> method is the same as the <code>configure</code> function from the examples above.</p>
+<h2 id="-making-resources-global-aurelia-doc-section-5-version-1-0-0-"><a href="aurelia-doc://section/5/version/1.0.0">Making Resources Global</a></h2>
+<p>When you create a view in Aurelia, it is completely encapsulated. In the same way that you must <code>import</code> modules into an ES2015/TypeScript module, you must also import or <code>require</code> components into an Aurelia view. However, certain components are used so frequently across views that it can become very tedious to import them over and over again. To solve this problem, Aurelia lets you explicitly declare certain &quot;view resources&quot; as global. In fact, the configuration helper method <code>defaultResources()</code> mentioned above does just that. It takes the default set of view resources, such as <code>repeat</code>, <code>if</code>, <code>compose</code>, etc, and makes them globally usable in every view. You can do the same with your own components. Here&#39;s how we could make the <code>my-component</code> custom element, located in a <em>resources</em> subfolder of your project, globally available in all views.</p>
+<p><code-listing heading="Make a Component Global">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging()
+        .globalResources(&#39;resources/my-component&#39;);</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>
+    .globalResources(<span class="hljs-symbol">'resources</span>/my-component');
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-organizing-your-app-with-features-aurelia-doc-section-6-version-1-0-0-"><a href="aurelia-doc://section/6/version/1.0.0">Organizing Your App with Features</a></h2>
+<p>Sometimes you have whole groups of components or related functionality that collectively form a &quot;feature&quot;. This &quot;feature&quot; may even be owned by a particular set of developers on your team. You want these developers to be able to manage the configuration and resources of their own feature, without interfering with the other parts of the app. For this scenario, Aurelia provides the &quot;feature&quot; feature.</p>
+<p>Imagine, as above, that we have a <code>my-component</code> component. Imagine that that was then one of a dozen components that formed a logical feature in your app called <code>my-feature</code>. Rather than place the feature&#39;s configuration logic inside the app&#39;s configuration module, we can place the feature&#39;s configuration inside its own feature configuration module.</p>
+<p>To create a &quot;feature&quot;, simply create a folder in your app; in the case of our example: <code>my-feature</code>. Inside that folder, place all the components and other code that pertain to that feature. Finally, create an <code>index${context.language.fileExtension}</code> file at the root of the <code>my-feature</code> folder. The <code>index${context.language.fileExtension}</code> file should export a single <code>configure</code> function. Here&#39;s what our code might look like for our hypothetical <code>my-feature</code> feature:</p>
+<p><code-listing heading="A Feature Module (index${context.language.fileExtension})">
+  <source-code lang="ES 2015/2016">
+    export function configure(config) {
+      config.globalResources(&#39;./my-component&#39;, &#39;./my-component-2&#39;, &#39;my-component-3&#39;, &#39;etc.&#39;);
+    }
+  </source-code>
+  <source-code lang="TypeScript">
+    import {FrameworkConfiguration} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">configure</span><span class="hljs-params">(config: FrameworkConfiguration)</span>: void </span>{
+  config.globalResources(<span class="hljs-string">'./my-component'</span>, <span class="hljs-string">'./my-component-2'</span>, <span class="hljs-string">'my-component-3'</span>, <span class="hljs-string">'etc.'</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>The <code>configure</code> method receives an instance of the same <code>FrameworkConfiguration</code> object as the <code>aurelia.use</code> property. So, the feature can configure your app in any way it needs. An important note is that resources should be configured using paths relative to the <code>index${context.language.fileExtension}</code> itself.</p>
+<p>How then do we turn this feature on in our app? Here&#39;s an app configuration file that shows:</p>
+<p><code-listing heading="Using a Feature">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging()
+        .feature(&#39;my-feature&#39;);</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>
+    .feature(<span class="hljs-symbol">'my</span>-feature');
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-installing-plugins-aurelia-doc-section-7-version-1-0-0-"><a href="aurelia-doc://section/7/version/1.0.0">Installing Plugins</a></h2>
+<p>Similar to features, you can install 3rd party plugins. The main difference is that a &quot;feature&quot; is provided internally by your application, while a plugin is installed from a 3rd party source through your package manager.</p>
+<p>To use a plugin, you first install the package. For example <code>jspm install my-plugin</code> would use jspm to install the <code>my-plugin</code> package. Once the package is installed, you must configure it in your application. Here&#39;s some code that shows how that works.</p>
+<p><code-listing heading="Using a Feature">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging()
+        .plugin(&#39;my-plugin&#39;, pluginConfiguration);</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>
+    .plugin(<span class="hljs-symbol">'my</span>-plugin', pluginConfiguration);
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>Simply provide the same name used during installation, to the plugin API. Some plugins may require configuration (see the plugin&#39;s documentation for details). If so, pass the configuration object or configuration callback function as the second parameter of the <code>plugin</code> API.</p>
+<h2 id="-leveraging-progressive-enhancement-aurelia-doc-section-8-version-1-0-0-"><a href="aurelia-doc://section/8/version/1.0.0">Leveraging Progressive Enhancement</a></h2>
+<p>So far you&#39;ve seen Aurelia replacing a portion of the DOM with a root component. However, that&#39;s not the only way to render with Aurelia. Aurelia can also progressively enhance existing HTML.</p>
+<p>Imagine that you want to generate your home page on the server, including using your server-side templating engine to render out HTML. Perhaps you&#39;ve got custom components you created with Aurelia, but you want to render the custom elements on the server with some content, in order to make things a bit more SEO friendly. Or perhaps you have an existing, traditional web app, that you want to incrementally start adding Aurelia to. When the HTML is rendered in the browser, you want to progressively enhance that HTML and &quot;bring it to life&quot; by activating all the Aurelia component&#39;s rich behavior.</p>
+<p>All this is possible with Aurelia, using a single method call: <code>enhance</code>. Instead of using <code>aurelia-app</code> let&#39;s use manual bootstrapping for this example. To progressively enhance the entire <code>body</code> of your HTML page, you can do something like this:</p>
+<p><code-listing heading="Progressive Enhancement">
+  <source-code lang="HTML">
+    &lt;!doctype html&gt;
+    <html>
+      <head>
+        <title>My App</title>
+      </head>
+      <body>
+        <my-component message="Enhance Me"></my-component></p>
+<pre><code>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"jspm_packages/system.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"config.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">
+      SystemJS.<span class="hljs-keyword">import</span>(<span class="hljs-string">'aurelia-bootstrapper'</span>).then(bootstrapper =&gt; {
+        bootstrapper.bootstrap(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(aurelia)</span></span>{
+          aurelia.<span class="hljs-keyword">use</span>
+            .defaultBindingLanguage()
+            .defaultResources()
+            .developmentLogging()
+            .globalResources(<span class="hljs-string">'resources/my-component'</span>);
+
+          aurelia.start().then(() =&gt; aurelia.enhance());
+        });
+      });
+    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>It&#39;s important to note that, in order for <code>enhance</code> to identify components to enhance in your HTML page, you need to declare those components as global resources, as we have above with the <code>my-component</code> component.</p>
+<p>Optionally, you can provide an object instance to use as the data-binding context for the enhancement, or provide a specific part of the DOM to enhance. Here&#39;s an example that shows both:</p>
+<p><code-listing heading="Customized Progressive Enhancement">
+  <source-code lang="HTML">
+    &lt;!doctype html&gt;
+    <html>
+      <head>
+        <title>My App</title>
+      </head>
+      <body>
+        <my-component message.bind="message"></my-component></p>
+<pre><code>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"jspm_packages/system.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"config.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">
+      SystemJS.<span class="hljs-keyword">import</span>(<span class="hljs-string">'aurelia-bootstrapper'</span>).then(bootstrapper =&gt; {
+        bootstrapper.bootstrap(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(aurelia)</span></span>{
+          aurelia.<span class="hljs-keyword">use</span>
+            .defaultBindingLanguage()
+            .defaultResources()
+            .developmentLogging()
+            .globalResources(<span class="hljs-string">'resources/my-component'</span>);
+
+          <span class="hljs-keyword">var</span> viewModel = {
+            message: <span class="hljs-string">'Enhanced'</span>
+          };
+
+          aurelia.start().then(() =&gt; aurelia.enhance(viewModel, document.body));
+        });
+      });
+    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-customizing-conventions-aurelia-doc-section-9-version-1-0-0-"><a href="aurelia-doc://section/9/version/1.0.0">Customizing Conventions</a></h2>
+<p>There are many things you may want to customize or configure as part of your application&#39;s bootstrap process. Once you have your main <code>configure</code> method in place and <code>aurelia-app</code> is pointing to that module, you can do just about anything you want. One of the most common aspects of Aurelia that developers may want to customize, is its conventions.</p>
+<h3 id="configuring-the-view-location-convention">Configuring the View Location Convention</h3>
+<p>Aureia uses a <em>View Strategy</em> to locate the view that is associated with a particular component&#39;s view-model. If the component doesn&#39;t specify its own view strategy, then Aurelia&#39;s <code>ViewLocator</code> service will use a fallback view strategy. The fallback strategy that is used is named <code>ConventionalViewStrategy</code>. This strategy uses the view-model&#39;s module id to conventionally map to its view id. For example, if the module id is &quot;welcome${context.language.fileExtension}&quot; then this strategy will look for the view at &quot;welcome.html&quot;. The conventional strategy&#39;s mapping logic can be changed if a different convention is desired. To do this, during bootstrap, import the <code>ViewLocator</code> and replace its <code>convertOriginToViewUrl</code> method with your own implementation. Here&#39;s some example code:</p>
+<p><code-listing heading="Custom View Location Convention">
+  <source-code lang="ES 2015/2016">
+    import {ViewLocator} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia) {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>;
+
+  <span class="hljs-type">ViewLocator</span>.prototype.convertOriginToViewUrl = (origin) =&gt; {
+    <span class="hljs-keyword">let</span> moduleId = origin.moduleId;
+    ...
+    return <span class="hljs-string">"view.html"</span>;
+  };
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(a =&gt; a.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {ViewLocator, Aurelia, Origin} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>;
+
+  <span class="hljs-type">ViewLocator</span>.prototype.convertOriginToViewUrl = (origin: <span class="hljs-type">Origin</span>): <span class="hljs-built_in">string</span> =&gt; {
+    <span class="hljs-keyword">let</span> moduleId = origin.moduleId;
+    ...
+    return <span class="hljs-string">"view.html"</span>;
+  };
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(a =&gt; a.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>In this example, you would simply replace &quot;...&quot; with your own mapping logic and return the resulting view path that was desired.</p>
+<h3 id="configuring-the-fallback-view-location-strategy">Configuring the Fallback View Location Strategy</h3>
+<p>In addition to customizing the mapping logic of the <code>ConventionalViewStrategy</code> you can also replace the entire fallback view strategy. To do this, replace the <code>createFallbackViewStrategy</code> of the <code>ViewLocator</code> with your own implementation. Here&#39;s some sample code for that:</p>
+<p><code-listing heading="Custom View Fallback">
+  <source-code lang="ES 2015/2016">
+    import {ViewLocator} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">configure</span><span class="hljs-params">(aurelia)</span> </span>{
+  aurelia.<span class="hljs-keyword">use</span>
+    .standardConfiguration()
+    .developmentLogging();
+
+  ViewLocator.prototype.createFallbackViewStrategy = (origin) =&gt; {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> CustomViewStrategy(origin);
+  };
+
+  aurelia.start().then(a =&gt; a.setRoot());
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {ViewLocator, Aurelia, Origin} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">configure</span><span class="hljs-params">(aurelia: Aurelia)</span>: <span class="hljs-title">void</span> </span>{
+  aurelia.<span class="hljs-keyword">use</span>
+    .standardConfiguration()
+    .developmentLogging();
+
+  ViewLocator.prototype.createFallbackViewStrategy = (origin: Origin) =&gt; {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> CustomViewStrategy(origin);
+  };
+
+  aurelia.start().then(a =&gt; a.setRoot());
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-logging-aurelia-doc-section-10-version-1-0-0-"><a href="aurelia-doc://section/10/version/1.0.0">Logging</a></h2>
+<p>Aurelia has a simple logging abstraction that the framework itself uses. By default it is a no-op. The configuration in the above examples shows how to install an appender which will take the log data and output it to the console. Here&#39;s the code again, for convenience:</p>
+<p><code-listing heading="Configuring Logging">
+  <source-code lang="ES 2015/2016">
+    import {LogManager} from &#39;aurelia-framework&#39;;
+    import {ConsoleAppender} from &#39;aurelia-logging-console&#39;;</p>
+<pre><code>LogManager.addAppender(<span class="hljs-keyword">new</span> ConsoleAppender());
+LogManager.setLevel(LogManager.logLevel.debug);
+
+export <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">configure</span><span class="hljs-params">(aurelia)</span> </span>{
+  aurelia.<span class="hljs-keyword">use</span>
+    .standardConfiguration;
+
+  aurelia.start().then(() =&gt; aurelia.setRoot());
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {LogManager, Aurelia} from &#39;aurelia-framework&#39;;
+    import {ConsoleAppender} from &#39;aurelia-logging-console&#39;;</p>
+<pre><code>LogManager.addAppender(<span class="hljs-keyword">new</span> ConsoleAppender());
+LogManager.setLevel(LogManager.logLevel.debug);
+
+export <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">configure</span><span class="hljs-params">(aurelia: Aurelia)</span>: void </span>{
+  aurelia.<span class="hljs-keyword">use</span>
+    .standardConfiguration;
+
+  aurelia.start().then(() =&gt; aurelia.setRoot());
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>You can also see how to set the log level. Values for the <code>logLevel</code> include: <code>none</code>, <code>error</code>, <code>warn</code>, <code>info</code> and <code>debug</code>.</p>
+<p>The above example uses our provided <code>ConsoleAppender</code>, but you can easily create your own appenders. Simply implement a class that matches the <code>Appender</code> interface from the logging library.</p>

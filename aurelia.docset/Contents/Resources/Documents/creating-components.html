@@ -1,0 +1,116 @@
+<hr>
+<p>{
+  &quot;name&quot;: &quot;Creating Components&quot;,
+  &quot;culture&quot;: &quot;en-US&quot;,
+  &quot;description&quot;: &quot;Components are the basic building blocks of all Aurelia applications. In this article you&#39;ll learn how to build basic components using dependency injection and the component lifecycle.&quot;,
+  &quot;engines&quot; : { &quot;aurelia-doc&quot; : &quot;^1.0.0&quot; },
+  &quot;author&quot;: {
+      &quot;name&quot;: &quot;Rob Eisenberg&quot;,
+      &quot;url&quot;: &quot;<a href="http://robeisenberg.com">http://robeisenberg.com</a>&quot;
+  },
+  &quot;contributors&quot;: [],
+  &quot;translators&quot;: [],
+  &quot;keywords&quot;: [&quot;Components&quot;, &quot;MVVM&quot;, &quot;Separation of Concerns&quot;]</p>
+<h2 id="-">}</h2>
+<h2 id="-creating-a-component-aurelia-doc-section-1-version-1-0-0-"><a href="aurelia-doc://section/1/version/1.0.0">Creating A Component</a></h2>
+<p>In Aurelia, user interface components are composed of <em>view</em> and <em>view-model</em> pairs. The view is written with HTML and is rendered into the DOM. The view-model is written with ${context.language.name} and provides data and behavior to the view. The Templating Engine along with Dependency Injection are responsible for creating these pairs and enforcing a predictable lifecycle for the component. Once instantiated, Aurelia&#39;s powerful <em>databinding</em> links the two pieces together allowing changes in your view-model to be reflected in the view and changes in your view to reflected in your view-model. This Separation of Concerns is great for developer/designer collaboration, maintainability, architectural flexibility, and even source control.</p>
+<p>To create a UI component, you need only create two files, one for each of the component parts. Let&#39;s create a simple &quot;Hello&quot; component. To do that we&#39;ll need a <em>hello${context.language.fileExtension}</em> for our view-model and <em>hello.html</em> for our view. Here&#39;s the source for each:</p>
+<p><code-listing heading="hello${context.language.fileExtension}">
+  <source-code lang="ES 2016">
+    export class Hello {
+      firstName = &#39;John&#39;;
+      lastName = &#39;Doe&#39;;</p>
+<pre><code>  <span class="hljs-selector-tag">sayHello</span>() {
+    <span class="hljs-selector-tag">alert</span>(<span class="hljs-built_in">`Hello ${this.firstName} ${this.lastName}. Nice to meet you.`</span>);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    export class Hello {
+      constructor() {
+        this.firstName = &#39;John&#39;;
+        this.lastName = &#39;Doe&#39;;
+      }</p>
+<pre><code>  <span class="hljs-selector-tag">sayHello</span>() {
+    <span class="hljs-selector-tag">alert</span>(<span class="hljs-built_in">`Hello ${this.firstName} ${this.lastName}. Nice to meet you.`</span>);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    export class Hello {
+      firstName: string = &#39;John&#39;;
+      lastName: string = &#39;Doe&#39;;</p>
+<pre><code>  <span class="hljs-selector-tag">sayHello</span>() {
+    <span class="hljs-selector-tag">alert</span>(<span class="hljs-built_in">`Hello ${this.firstName} ${this.lastName}. Nice to meet you.`</span>);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="hello.html">
+  <source-code lang="HTML">
+    <template>
+      <input value.bind="firstName">
+      <input value.bind="lastName"></p>
+<pre><code>  <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">click.trigger</span>=<span class="hljs-string">"sayHello()"</span>&gt;</span>Say Hello<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>Notice that the view-model is a plain class. There&#39;s nothing remarkable about it. One of the strengths of Aurelia is that you can write so much of your application in vanilla JS.</p>
+<p>Also, notice how the view is wrapped in a Web Components HTMLTemplateElement. All views use standards-based HTML templates. You can also see the very simple, easy-to remember binding language. Simply append <code>.bind</code> to any HTML attribute in the DOM, and Aurelia will bind it to the corresponding property in your view-model.</p>
+<p>The <code>.bind</code> binding command configures the &quot;default binding behavior&quot; for the attribute. For most attributes, this is a <code>one-way</code> binding, where data updates only flow in one direction: from the view-model to the view. However, usually, the behavior you want for form controls is <code>two-way</code> binding so that data not only flows from your view-model into your view, but user input in the view flows back into your view-model.</p>
+<p>Those are the defaults, but you can always be explicit about the binding direction by using <code>.one-way</code>, <code>two-way</code> or <code>.one-time</code> in place of <code>.bind</code>. (<code>.one-time</code> renders the initial value of the property but does not perform synchronization thereafter, making it a nice memory and performance gain for data you know will not change.)</p>
+<p>In addition to binding HTML attributes, you can also bind events. Any event, either native or custom, can be bound using <code>.trigger</code> this causes the expression to be invoked when the indicated event is fired.</p>
+<blockquote>
+<p>Info
+You can read more about data binding in the various Binding articles.</p>
+</blockquote>
+<p>Now you know how to build basic components. What&#39;s great about this knowledge? It&#39;s consistent throughout Aurelia. The same pattern as above is used to create your app&#39;s root component, screens that the router navigates to, custom elements, dynamically composed UI components, modal dialogs, etc.</p>
+<h2 id="-component-instantiation-through-dependency-injection-di-aurelia-doc-section-2-version-1-0-0-"><a href="aurelia-doc://section/2/version/1.0.0">Component Instantiation Through Dependency Injection (DI)</a></h2>
+<p>View-models and other interface elements, such as Custom Elements and Custom Attributes, are created as classes which are instantiated by the framework using a dependency injection container. Code written in this style is easy to modularize and test. Rather than creating large classes, you can break things down into small objects that collaborate to achieve a goal. The DI can then put the pieces together for you at runtime.</p>
+<p>In order to leverage DI, you simply decorate your class to tell the framework what it should pass to its constructor. Here&#39;s an example of a CustomDetail component that depends on Aurelia&#39;s fetch client.</p>
+<p><code-listing heading="customer-detail${context.language.fileExtension}">
+  <source-code lang="ES 2016">
+    import {inject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code>@inject(HttpClient)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomerDetail</span> </span>{
+  <span class="hljs-keyword">constructor</span>(http) {
+    <span class="hljs-keyword">this</span>.http = http;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> CustomerDetail <span class="hljs-comment">{
+  static inject() { return [HttpClient] }</span>;
+
+  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">(http)</span> <span class="hljs-comment">{
+    this.http = http;
+  }</span>
+}</span>
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {autoinject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code><span class="hljs-variable">@autoinject</span>
+export class CustomerDetail {
+  <span class="hljs-selector-tag">constructor</span>(private <span class="hljs-attribute">http</span>: HttpClient) {}
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<ul>
+<li>If you are using ES2016, use the <code>inject</code> decorator. It should pass a list of types to provide instances of. There should be one argument for each constructor parameter. In the above example, we needed an HttpClient instance, so we added the <code>HttpClient</code> type in the <code>inject</code> decorator and then added a corresponding parameter in the constructor.</li>
+<li>If you are sticking with ES2015, or don&#39;t want to use decorators, you can also add a static <code>inject</code> method to the class that returns an array of types to inject.</li>
+<li>If you are using TypeScript &gt;= 1.5, you can add the <code>@autoinject</code> decorator to your class and leave out the Types in the decorator call, but just use them on the constructor&#39;s signature.</li>
+</ul>
+<h2 id="-the-component-lifecycle-aurelia-doc-section-3-version-1-0-0-"><a href="aurelia-doc://section/3/version/1.0.0">The Component Lifecycle</a></h2>
+<p>All components have a well-defined lifecycle. Below is a list of methods you can implement on your view-model in order to hook into the component lifecycle:</p>
+<ol>
+<li><code>constructor()</code> - The view-model&#39;s constructor is called first.</li>
+<li><code>created(owningView: View, myView: View)</code> - If the view-model implements the <code>created</code> callback it is invoked next. At this point in time, the view has also been created and both the view-model and the view are connected to their controller. The created callback will recieve the instance of the &quot;owningView&quot;. This is the view that the component is declared inside of. If the component itself has a view, this will be passed second.</li>
+<li><code>bind(bindingContext: Object, overrideContext: Object)</code> - Databinding is then activated on the view and view-model. If the view-model has a <code>bind</code> callback, it will be invoked at this time. The &quot;binding context&quot; to which the component is being bound will be passed first. An &quot;override context&quot; will be passed second. The override context contains information used to traverse the parent hierarchy and can also be used to add any contextual properties that the component wants to add.</li>
+<li><code>attached()</code> - Next, the component is attached to the DOM (in document). If the view-model has an <code>attached</code> callback, it will be invoked at this time.</li>
+<li><code>detached()</code> - At some point in the future, the component may be removed from the DOM. If/When this happens, and if the view-model has a <code>detached</code> callback, this is when it will be invoked.</li>
+<li><code>unbind()</code> - After a component is detached, it&#39;s usually unbound. If your view-model has the <code>unbind</code> callback, it will be invoked during this process.</li>
+</ol>
+<p>Each of these callbacks is optional. Implement whatever makes sense for your component, but don&#39;t feel obligated to implement any of them if they aren&#39;t needed for your scenario. Usually, if you implement <code>bind</code> you will need to implement <code>unbind</code>. The same goes for <code>attached</code> and <code>detached</code>, but again, it isn&#39;t mandatory.</p>

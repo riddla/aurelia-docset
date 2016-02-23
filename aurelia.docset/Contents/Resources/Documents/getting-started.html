@@ -1,0 +1,600 @@
+<hr>
+<p>{
+  &quot;name&quot;: &quot;Getting Started&quot;,
+  &quot;culture&quot;: &quot;en-US&quot;,
+  &quot;description&quot;: &quot;Welcome to Aurelia! This tutorial will take you through creating a simple application using Aurelia and briefly explain its main concepts. We assume you are familiar with JavaScript, HTML, and CSS.&quot;,
+  &quot;engines&quot; : { &quot;aurelia-doc&quot; : &quot;^1.0.0&quot; },
+  &quot;author&quot;: {
+      &quot;name&quot;: &quot;Rob Eisenberg&quot;,
+      &quot;url&quot;: &quot;<a href="http://robeisenberg.com">http://robeisenberg.com</a>&quot;
+  },
+  &quot;contributors&quot;: [],
+  &quot;translators&quot;: [],
+  &quot;keywords&quot;: [&quot;Getting Started&quot;, &quot;ES2015&quot;, &quot;ES2016&quot;, &quot;TypeScript&quot;]</p>
+<h2 id="-">}</h2>
+<h2 id="-getting-set-up-aurelia-doc-section-1-version-1-0-0-"><a href="aurelia-doc://section/1/version/1.0.0">Getting Set Up</a></h2>
+<p>Before we start writing some code, you&#39;re going to want to grab one of our pre-configured, getting-started packages. We&#39;ve got two versions available to you: one uses ECMAScript 2016 (JavaScript vNext) and the other one uses TypeScript. Choose one now by clicking one of the buttons below.</p>
+<div style="text-align: center;">
+  <a class="au-button" href="http://aurelia.io/downloads/kit-es2016.zip" style="text-decoration: none; margin: 32px 8px 42px 8px;" target="_blank">Download the ES 2016 Kit</a>
+  <a class="au-button" href="http://aurelia.io/downloads/kit-typescript.zip" style="text-decoration: none; margin: 32px 8px 42px 8px;" target="_blank">Download the TypeScript Kit</a>
+</div>
+
+<p>Based on your selection, you&#39;ll want to configure this documentation to show the appropriate language for all samples. Look at the top of this page. You will see a language selector. Be sure to select the language that matches the package that you downloaded.</p>
+<p>Now that you&#39;ve downloaded a starter package, you need to unzip it on your hard drive. Doing so will provide you with the default folder structure, scripts and styles needed to complete this tutorial and continue your learning and experimentation afterward. With the folder structure in place, next we&#39;ll need to start a web server to serve up your index.html page, so we can view it in a browser. How you go about doing that depends on which server-side technology you want to use. Below are instructions for a couple of common scenarios:</p>
+<ul>
+<li><strong>Visual Studio</strong> - Open Visual Studio 2015. Using the main menu, select File &gt; Open &gt; Web site... In the resulting dialog, choose the starter kit folder then click the Open button. The folder contents will be displayed in the Visual Studio Solution Explorer window. Right click on index.html in Solution Explorer and select &quot;View in Browser&quot;. This will fire up IISExpress and serve index.html.</li>
+<li><strong>NodeJS</strong> - To start up a simple web server in the app folder, first globally install the http-server command with <code>npm install http-server -g</code>. (In some environments you many need to use <code>sudo</code>). Once that is installed, change directory to the starter kit folder. You can now spin up the server from within the folder with the following command <code>http-server -o -c-1</code>.</li>
+<li><strong>Firefox</strong> - For the ES 2016 kit only, if you don&#39;t want to worry about setting up a web server, Firefox is flexible enough to serve the app directly from your hard drive. Simply open the <code>index.html</code> file with Firefox.</li>
+</ul>
+<p>Once you&#39;ve got your web server set up, navigate to the <code>index.html</code> page using your favorite browser. If everything is working correctly, you should see the message &quot;Welcome to Aurelia!&quot; displayed.</p>
+<h2 id="-the-index-html-page-aurelia-doc-section-2-version-1-0-0-"><a href="aurelia-doc://section/2/version/1.0.0">The Index.html Page</a></h2>
+<p>If you&#39;ve followed along this far, you now have everything set up to help you learn Aurelia. Let&#39;s start by taking a look at the <code>index.html</code> file. This file provides a good template for new Aurelia-based apps.</p>
+<p><code-listing heading="index.html">
+  <source-code lang="HTML">
+    &lt;!doctype html&gt;
+    <html>
+      <head>
+        <title>Aurelia</title>
+        <link rel="stylesheet" href="styles/styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      </head>
+      <body aurelia-app>
+        <script src="jspm_packages/system.js"></script>
+        <script src="config.js"></script>
+        <script>
+          SystemJS.import(&#39;aurelia-bootstrapper&#39;);
+        </script>
+      </body>
+    </html>
+  </source-code>
+</code-listing></p>
+<p>Yes, that&#39;s it. This is the only HTML page in our application. The head of the document is pretty straight forward: just a style sheet link and some metadata. It&#39;s the body that&#39;s interesting.</p>
+<p>Let&#39;s start with the script tags. First we have <em>system.js</em>, our standards-based module loader. It&#39;s what loads the Aurelia library as well as your own code. Next we have <em>config.js</em>. This contains configuration for the loader. It&#39;s generated automatically whenever you install packages with our tools. We&#39;ve gone ahead and pre-installed everything for you in this tutorial, so you don&#39;t need to worry about that yet.</p>
+<p>Once we have our module loader and its configuration, we load the <code>aurelia-bootstrapper</code> module with a call to <code>SystemJS.import</code>.</p>
+<p>When the bootstrapper loads it inspects the HTML document for <em>aurelia-app</em> attributes. In this case it will find that the body has an <code>aurelia-app</code> attribute. This tells the bootstrapper to load our <em>app</em> view-model and its view, conventionally located in <em>app${context.language.fileExtension}</em> and <em>app.html</em> and then compose them as an Aurelia application in the DOM.</p>
+<p>Wait a minute....we don&#39;t have an <em>app</em> view-model or view. Ummm...WHAT NOW!?</p>
+<h2 id="-creating-your-first-screen-aurelia-doc-section-3-version-1-0-0-"><a href="aurelia-doc://section/3/version/1.0.0">Creating Your First Screen</a></h2>
+<p>In Aurelia, user interface components have two parts: a <em>view</em> and a <em>view-model</em>. The <em>view</em> is written with HTML and is rendered into the DOM. The <em>view-model</em> is written with ${context.language.name} and provides data and behavior to the <em>view</em>. Aurelia&#39;s powerful <em>databinding</em> links the two pieces together allowing changes in your data to be reflected in the <em>view</em> and vice versa. This Separation of Concerns is great for developer/designer collaboration, maintainability, architectural flexibility and even source control.</p>
+<p>Let&#39;s see how it works...</p>
+<p>In the <em>src</em> folder find the <em>app.html</em> and <em>app${context.language.fileExtension}</em> files. This is the app component&#39;s view and view-model, the files that the bootstrapper is loading. Let&#39;s start by replacing the <em>view-model</em> with a simple class to hold a <em>firstName</em> and <em>lastName</em>. We&#39;ll also add a computed property for <em>fullName</em> and a method to &quot;submit&quot; the person. Here&#39;s what your <em>app${context.language.fileExtension}</em> file should look like after you have made the changes:</p>
+<p><code-listing heading="app${context.language.fileExtension}">
+  <source-code lang="ES 2015">
+    export class Welcome {
+      constructor() {
+        this.heading = &#39;Welcome to Aurelia!&#39;;
+        this.firstName = &#39;John&#39;;
+        this.lastName = &#39;Doe&#39;;
+      }</p>
+<pre><code>  <span class="hljs-keyword">get</span> fullName() {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">${this.firstName}</span> <span class="hljs-subst">${this.lastName}</span>`</span>;
+  }
+
+  submit() {
+    alert(<span class="hljs-string">`Welcome, <span class="hljs-subst">${this.fullName}</span>!`</span>);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2016">
+    export class Welcome {
+      heading = &#39;Welcome to Aurelia!&#39;;
+      firstName = &#39;John&#39;;
+      lastName = &#39;Doe&#39;;</p>
+<pre><code>  <span class="hljs-keyword">get</span> fullName() {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">${this.firstName}</span> <span class="hljs-subst">${this.lastName}</span>`</span>;
+  }
+
+  submit() {
+    alert(<span class="hljs-string">`Welcome, <span class="hljs-subst">${this.fullName}</span>!`</span>);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    export class Welcome {
+      heading: string = &#39;Welcome to Aurelia!&#39;;
+      firstName: string = &#39;John&#39;;
+      lastName: string = &#39;Doe&#39;;</p>
+<pre><code>  <span class="hljs-keyword">get</span> fullName(): <span class="hljs-built_in">string</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">${this.firstName}</span> <span class="hljs-subst">${this.lastName}</span>`</span>;
+  }
+
+  submit(): <span class="hljs-built_in">void</span> {
+    alert(<span class="hljs-string">`Welcome, <span class="hljs-subst">${this.fullName}</span>!`</span>);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>Ok. Now that we have a <em>view-model</em> with some basic data and behavior, let&#39;s use the following HTML to create the <em>view</em>:</p>
+<p><code-listing heading="app.html">
+  <source-code lang="HTML">
+    <template>
+      <section>
+        <h2>${heading}</h2></p>
+<pre><code><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">submit.trigger</span>=<span class="hljs-string">"submit()"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">label</span>&gt;</span>First Name<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">value.bind</span>=<span class="hljs-string">"firstName"</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">label</span>&gt;</span>Last Name<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">value.bind</span>=<span class="hljs-string">"lastName"</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">label</span>&gt;</span>Full Name<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>$</span><span class="hljs-template-variable">{fullName}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span>&gt;</span>Submit<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>The first thing to notice is that all views are contained within a <code>template</code> tag, part of the W3C spec for Web Components. This particular view is a basic input form. Look at the input controls. Did you notice <code>value.bind=&quot;firstName&quot;</code>? That databinds the input&#39;s <em>value</em> to the <em>firstName</em> property in our view-model. Any time the view-model&#39;s property changes, the input will be updated with the new value. Any time you change the value in the input control, Aurelia will push the new value into your view-model. It&#39;s that easy.</p>
+<p>There are a couple more interesting things in this example. In the last form group you can see this syntax in the HTML content: <code>\${fullName}</code>. That&#39;s a string interpolation. It&#39;s a one-way binding from the view-model into the view that is automatically converted to a string and interpolated into the document. Finally, have a look at the form element itself. You should notice this: <code>submit.trigger=&quot;submit()&quot;</code>. That&#39;s an event binding. Whenever the form&#39;s <em>submit</em> event is fired the <em>submit</em> method on the view-model will be invoked.</p>
+<p>Let&#39;s refresh our browser to see the updated app in action. Pretty cool, yes!?</p>
+<blockquote>
+<p>Info: Binding Commands
+The <code>.bind</code> command uses the default binding behavior for any property. The default is one-way binding (model to view) for everything except form controls, which default to two-way. You can always override this by using the explicit binding commands <code>.one-way</code>, <code>.two-way</code> and <code>.one-time</code>. Similarly, you can use <code>.delegate</code> for event delegation in place of <code>.trigger</code>.</p>
+</blockquote>
+<h2 id="-adding-navigation-aurelia-doc-section-4-version-1-0-0-"><a href="aurelia-doc://section/4/version/1.0.0">Adding Navigation</a></h2>
+<p>A one page app isn&#39;t very interesting. We should probably add some more screens and set up a client-side router, don&#39;t you think? Let&#39;s begin by renaming our <em>app${context.language.fileExtension}</em> and <em>app.html</em> to <em>welcome${context.language.fileExtension}</em> and <em>welcome.html</em> respectively. This will be the first screen of our multi-screen app. Now, lets create a new <em>app${context.language.fileExtension}</em> and <em>app.html</em> which will serve as our &quot;layout&quot;,  &quot;master page&quot; or &quot;root component&quot;. The view will contain our navigation UI and the content placeholder for the current screen and the view-model will configure a router instance with our routes. We&#39;ll start with the view-model so you can see how to set up the router:</p>
+<p><code-listing heading="app${context.language.fileExtension}">
+  <source-code lang="ES 2015/2016">
+    export class App {
+      configureRouter(config, router) {
+        config.title = &#39;Aurelia&#39;;
+        config.map([
+          { route: [&#39;&#39;,&#39;welcome&#39;], name: &#39;welcome&#39;, moduleId: &#39;./welcome&#39;, nav: true, title:&#39;Welcome&#39; }
+        ]);</p>
+<pre><code>    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {RouterConfiguration, Router} from &#39;aurelia-router&#39;;</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+<span class="hljs-symbol">  router:</span> Router;
+
+  configureRouter(<span class="hljs-string">config:</span> RouterConfiguration, <span class="hljs-string">router:</span> Router) {
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">''</span>,<span class="hljs-string">'welcome'</span>], <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>, <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./welcome'</span>, <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> }
+    ]);
+
+    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>Ok, we want to use the router, so we begin by creating and exporting our <em>App</em> class and having it implement the <code>configureRouter</code> callback. This callback will be invoked with a configuration object. Using the configuration object, we set a title to use when generating the document&#39;s title, then map our routes. Each route has the following properties:</p>
+<ul>
+<li><code>route</code>: This is a pattern which, when matched, will cause the router to navigate to this route. You can use static routes like above, but you can also use parameters like this: <code>customer/:id</code>. There&#39;s also support for wildcard routes and query string parameters. The route can be a single string pattern or an array of patterns as above.</li>
+<li><code>name</code>: This is a name to use in code when generating URLs for the route.</li>
+<li><code>moduleId</code>: This is a path which specifies the component you want to render for this route.</li>
+<li><code>title</code>: You can optionally provide a title to be used in generating the document&#39;s title.</li>
+<li><code>nav</code>: If this route should be included in the <em>navigation model</em> because you want to generate a UI with it, set this to true (or a number indicating order).</li>
+</ul>
+<p><code-listing heading="app.html">
+  <source-code lang="HTML">
+    <template>
+      <require from="bootstrap/css/bootstrap.css"></require>
+      <require from="font-awesome/css/font-awesome.css"></require></p>
+<pre><code><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">nav</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"navbar navbar-default navbar-fixed-top"</span> <span class="hljs-attr">role</span>=<span class="hljs-string">"navigation"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"navbar-header"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"button"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"navbar-toggle"</span> <span class="hljs-attr">data-toggle</span>=<span class="hljs-string">"collapse"</span> <span class="hljs-attr">data-target</span>=<span class="hljs-string">"#bs-example-navbar-collapse-1"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"sr-only"</span>&gt;</span>Toggle Navigation<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"icon-bar"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"icon-bar"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"icon-bar"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"navbar-brand"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"#"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">i</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"fa fa-home"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">i</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>$</span><span class="hljs-template-variable">{router.title}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"collapse navbar-collapse"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"bs-example-navbar-collapse-1"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"nav navbar-nav"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">repeat.for</span>=<span class="hljs-string">"row of router.navigation"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"$</span></span></span><span class="hljs-template-variable">{row.isActive ? 'active' : ''}</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">"</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href.bind</span>=<span class="hljs-string">"row.href"</span>&gt;</span>$</span><span class="hljs-template-variable">{row.title}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+
+      <span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"nav navbar-nav navbar-right"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"loader"</span> <span class="hljs-attr">if.bind</span>=<span class="hljs-string">"router.isNavigating"</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">i</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"fa fa-spinner fa-spin fa-2x"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">i</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">nav</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"page-host"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">router-view</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">router-view</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>Following our simple app-building convention, the <code>App</code> class will be databound to the above view in <em>app.html</em>. A large part of this markup deals with setting up the main navigation structure. But before we get into that...do you see the <code>require</code> elements at the top of the view? In the same way that you can use <code>import</code> statements in ES2015/2016, Aurelia enables you to use <code>require</code> elements in HTML. The require element enables loading and including of functionality such as custom elements and behaviors, and in this case, CSS. Here, since our sample app is going to use some bootstrap styles and icons from font-awesome, we &quot;require&quot; those style sheets. With that in place, we can use bootstrap to lay out our navigation structure, as above. But that&#39;s not the interesting part of this view. What we really want to focus on is the binding and custom elements...</p>
+<p>Since you&#39;ve seen basic binding and string interpolation already, let&#39;s focus on the new stuff. Take a look at the navbar-nav <code>ul</code> element. Its <code>li</code> demonstrates how to use a repeater with the following expression <code>repeat.for=&quot;row of router.navigation&quot;</code>. This will create one <code>li</code> for each item in the <code>router.navigation</code> array. The local variable is <em>row</em> and you can see that used throughout the <code>li</code> and its child elements.</p>
+<blockquote>
+<p>Info
+The <code>navigation</code> property on the router is an array populated with all the routes you marked as <code>nav:true</code> in your route config. Aurelia models its <code>repeat.for</code> syntax after the new standard ES2015 <code>for..of</code> loop. So, you can think of looping over the array of navigable routes and generating UI for each.</p>
+</blockquote>
+<p>Also on the <code>li</code> you can see a demonstration of how to use string interpolation to dynamically add/remove classes. Further down in the view, there&#39;s a second <code>ul</code>. See the binding on its single child <code>li</code>? <code>if.bind=&quot;router.isNavigating&quot;</code> This conditionally adds/removes the <code>li</code> based on the value of the bound expression. Conveniently, the router will update its <code>isNavigating</code> property whenever it is....navigating.</p>
+<p>The last piece we want to look at is the <code>router-view</code> custom element near the bottom of the view. This element, provided by Aurelia, represents the location in the DOM where the current &quot;screen&quot; will be rendered, based on the configured router&#39;s state.</p>
+<p>With this in place, go ahead and refresh the browser and have a look. You should now see a main navigation with a single selected tab for our &quot;welcome&quot; route. The <em>welcome</em> view should display in the main content area and function as before. Open up the browser&#39;s debug tools and have a look at the live DOM. You will see that the <em>welcome</em> view content is displayed inside the <code>router-view</code>.</p>
+<h2 id="-adding-a-second-page-aurelia-doc-section-5-version-1-0-0-"><a href="aurelia-doc://section/5/version/1.0.0">Adding a Second Page</a></h2>
+<p>Well, we&#39;ve technically got a navigation application now...but it&#39;s not very interesting because there&#39;s still only one screen. Let&#39;s add a second screen. Can you guess how to do it? I bet you can...</p>
+<p>Let&#39;s display some users from Github. To do that, let&#39;s first configure our router for the hypothetical screen:</p>
+<p><code-listing heading="app${context.language.fileExtension} (updated)">
+  <source-code lang="ES 2015/2016">
+    export class App {
+      configureRouter(config, router){
+        config.title = &#39;Aurelia&#39;;
+        config.map([
+          { route: [&#39;&#39;,&#39;welcome&#39;],  name: &#39;welcome&#39;,  moduleId: &#39;./welcome&#39;,  nav: true, title:&#39;Welcome&#39; },
+          { route: &#39;users&#39;,         name: &#39;users&#39;,    moduleId: &#39;./users&#39;,    nav: true, title:&#39;Github Users&#39; }
+        ]);</p>
+<pre><code>    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {RouterConfiguration, Router} from &#39;aurelia-router&#39;;</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+<span class="hljs-symbol">  router:</span> Router;
+
+  configureRouter(<span class="hljs-string">config:</span> RouterConfiguration, <span class="hljs-string">router:</span> Router) {
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">''</span>,<span class="hljs-string">'welcome'</span>],  <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>,  <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./welcome'</span>,  <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'users'</span>,         <span class="hljs-string">name:</span> <span class="hljs-string">'users'</span>,    <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./users'</span>,    <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Github Users'</span> }
+    ]);
+
+    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>If you guessed that we need to create a <em>users${context.language.fileExtension}</em> and <em>users.html</em> file, you are correct. Here&#39;s the source:</p>
+<p><code-listing heading="users${context.language.fileExtension}">
+  <source-code lang="ES 2015">
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;
+    import &#39;fetch&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Users</span> </span>{
+  <span class="hljs-keyword">static</span> inject() { <span class="hljs-keyword">return</span> [HttpClient]; }
+
+  constructor(http) {
+    <span class="hljs-keyword">this</span>.http = http;
+    <span class="hljs-keyword">this</span>.heading = <span class="hljs-string">'Github Users'</span>;
+    <span class="hljs-keyword">this</span>.users = [];
+
+    http.configure(config =&gt; {
+      config
+        .useStandardConfiguration()
+        .withBaseUrl(<span class="hljs-string">'https://api.github.com/'</span>);
+    });
+  }
+
+  activate() {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.http.fetch(<span class="hljs-string">'users'</span>)
+      .then(response =&gt; response.json())
+      .then(users =&gt; <span class="hljs-keyword">this</span>.users = users);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2016">
+    import {inject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;
+    import &#39;fetch&#39;;</p>
+<pre><code><span class="hljs-meta">@inject</span>(HttpClient)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Users</span> </span>{
+  heading = <span class="hljs-string">'Github Users'</span>;
+  users = [];
+
+  constructor(http) {
+    http.configure(config =&gt; {
+      config
+        .useStandardConfiguration()
+        .withBaseUrl(<span class="hljs-string">'https://api.github.com/'</span>);
+    });
+
+    <span class="hljs-keyword">this</span>.http = http;
+  }
+
+  activate() {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.http.fetch(<span class="hljs-string">'users'</span>)
+      .then(response =&gt; response.json())
+      .then(users =&gt; <span class="hljs-keyword">this</span>.users = users);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {autoinject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;
+    import &#39;fetch&#39;;</p>
+<pre><code>@autoinject
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> Users {
+  heading: <span class="hljs-keyword">string</span> = <span class="hljs-string">'Github Users'</span>;
+  users: any[] = [];
+
+  constructor(<span class="hljs-keyword">private</span> http: <span class="hljs-built_in">HttpClient</span>) {
+    http.configure(<span class="hljs-built_in">config</span> =&gt; {
+      <span class="hljs-built_in">config</span>
+        .useStandardConfiguration()
+        .withBaseUrl(<span class="hljs-string">'https://api.github.com/'</span>);
+    });
+  }
+
+  activate() {
+    <span class="hljs-function">return</span> <span class="hljs-keyword">this</span>.http.fetch(<span class="hljs-string">'users'</span>)
+      .then(response =&gt; response.json())
+      .then(users =&gt; <span class="hljs-keyword">this</span>.users = users);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>There&#39;s a lot of cool stuff here. Let&#39;s start at the beginning. We are importing <code>HttpClient</code> from Aurelia&#39;s Fetch plugin, as well as the fetch polyfill. This lets us make HTTP requests in a very simple way, based on the upcoming W3C Fetch standard. This plugin is not included with the default Aurelia configuration but we&#39;ve included it in this starter kit for you.</p>
+<blockquote>
+<p>Info
+In a later tutorial we&#39;ll talk more about the power of the integrated package manager and loader.</p>
+</blockquote>
+<p>If you are using ES2016, take a look at the <code>inject</code> decorator. What does that do? Well, Aurelia creates the UI components as needed to render your app. It does this by using a <a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> container capable of providing constructor dependencies like HttpClient. How does the DI system know what to provide? All you have to do is add that ES2016 <code>inject</code> decorator to your class. It should pass a list of types to provide instances of. There should be one argument for each constructor parameter. In the above example, we needed an HttpClient instance, so we added the <code>HttpClient</code> type in the <code>inject</code> decorator and then added a corresponding parameter in the constructor.</p>
+<p>If you are sticking with ES2015, or don&#39;t want to use decorators, you can also add a static <code>inject</code> method or property to the class that returns an array of types to inject.</p>
+<p>If you are using TypeScript &gt;= 1.5, you can add the <code>@autoinject</code> decorator to your class and leave out the Types in the decorator call, but just use them on the constructor&#39;s signature.</p>
+<p>Aurelia&#39;s router enforces a lifecycle on view-models whenever routes change. This is referred to as the &quot;Screen Activation Lifecycle&quot; or &quot;Navigation Lifecycle&quot;. View-models can optionally hook into various parts of the lifecycle to control flow into and out of the route. When your route is ready to activate the router will call the <code>activate</code> hook, if present. In the above code, we use this hook to call the GitHub API and get some users back. Notice that we return the result of the http request back from our <code>activate</code> method. All the <code>HttpClient</code> APIs return a <code>Promise</code>. The router will detect a <code>Promise</code> and wait to complete navigation until after it resolves. So, in this way, you can optionally force the router to delay displaying the page until it is populated with data.</p>
+<blockquote>
+<p>Info: Navigation Lifecycle Hooks
+The full navigation lifecycle includes <code>canActivate</code>, <code>activate</code>, <code>canDeactivate</code> and <code>deactivate</code> hooks. The can* methods can return a boolean (or Promise of boolean) to accept or reject the transition into or out of the current screen.</p>
+<p>Info
+If you aren&#39;t familiar with <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promises</a>, these are a new feature of ES2015 designed to improve asynchronous programming. A <code>Promise</code> is an object that represents a future result. Essentially, it represents a &quot;promise&quot; to complete some work or to provide some data at some point in the future.</p>
+</blockquote>
+<p><code-listing heading="users.html">
+  <source-code lang="HTML">
+    <template>
+      <section>
+        <h2>${heading}</h2>
+        <div class="row au-stagger">
+          <div class="col-sm-6 col-md-3 card-container" repeat.for="user of users">
+            <div class="card">
+              <canvas class="header-bg" width="250" height="70"></canvas>
+              <div class="avatar">
+                <img src.bind="user.avatar_url" crossorigin />
+              </div>
+              <div class="content">
+                <p class="name">${user.login}</p>
+                <p><a target="_blank" class="btn btn-default" href.bind="user.html_url">Contact</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </template>
+  </source-code>
+</code-listing></p>
+<p>The view for this screen is pretty straight forward. There&#39;s nothing you haven&#39;t seen before. Once you&#39;ve got all this in place, go ahead and run your app again. You should now see two items in the nav bar and be able to switch back and forth between them. Huzzah!</p>
+<p>Let&#39;s recap. To add a page to your app:</p>
+<ol>
+<li>Add the route configuration to the <em>app${context.language.fileExtension}</em> router.</li>
+<li>Add a view-model.</li>
+<li>Add a view with the same name (but with an .html extension).</li>
+<li>Celebrate.</li>
+</ol>
+<h2 id="-bonus-creating-a-custom-element-aurelia-doc-section-6-version-1-0-0-"><a href="aurelia-doc://section/6/version/1.0.0">Bonus: Creating a Custom Element</a></h2>
+<p>Look at you, you overachiever! I see you&#39;re interested in learning some extra awesome on this fine day. In that case, let&#39;s create a custom HTML element. I think a good candidate for this is our navbar. That&#39;s a lot of HTML in our <em>app.html</em> file. Why not extract a custom <code>&lt;nav-bar&gt;</code> element to make things a bit more declarative? Here&#39;s what we want to be able to write in the end:</p>
+<p><code-listing heading="app.html">
+  <source-code lang="HTML">
+    <template>
+      <require from="bootstrap/css/bootstrap.css"></require>
+      <require from="font-awesome/css/font-awesome.css"></require>
+      <require from='./nav-bar'></require></p>
+<pre><code>  <span class="hljs-tag">&lt;<span class="hljs-name">nav-bar</span> <span class="hljs-attr">router.bind</span>=<span class="hljs-string">"router"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">nav-bar</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"page-host"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">router-view</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">router-view</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>This code requires a <code>nav-bar</code> element from &quot;nav-bar&quot; and once it&#39;s available in the view, we can use it like any other element, including databinding to its custom properties (like <em>router</em>). So, how do we get to this end product?</p>
+<p>Guess what? Our simple view-model/view conventions still apply for custom elements. Let&#39;s create a <em>nav-bar${context.language.fileExtension}</em> and a <em>nav-bar.html</em>. Here&#39;s the code for the view-model first:</p>
+<p><code-listing heading="nav-bar${context.language.fileExtension}">
+  <source-code lang="ES 2015">
+    import {bindable, decorators} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> NavBar = decorators(bindable(<span class="hljs-string">'router'</span>)).on(<span class="hljs-class"><span class="hljs-keyword">class</span> </span>{
+  <span class="hljs-keyword">constructor</span>() {
+    <span class="hljs-keyword">this</span>.router = <span class="hljs-literal">null</span>;
+  }
+});
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2016">
+    import {bindable} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NavBar</span> </span>{
+  <span class="hljs-meta">@bindable</span> router = <span class="hljs-keyword">null</span>;
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {bindable} from &#39;aurelia-framework&#39;;
+    import {Router} from &#39;aurelia-router&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NavBar</span> </span>{
+  <span class="hljs-meta">@bindable</span> router: Router = <span class="hljs-keyword">null</span>;
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>To create a custom element, you create and export a class. Since this class is going to be used in HTML as an element, we need to tell the framework what properties on the class should appear as attributes on the element. To do that, we use the <em>bindable</em> decorator. Like <em>inject</em>, <em>bindable</em> is a way to provide information about your class to the Aurelia framework. Aurelia is smart and can infer many things, but when it can&#39;t or when you want to do something different than the conventions, you supply some additional information through decorators. The <code>bindable</code> decorator tells the framework that we want our class&#39;s <code>router</code> property to be surfaced as an attribute in the HTML. Once it&#39;s surfaced as an attribute, we can bind to it in the view.</p>
+<p><code-listing heading="nav-bar.html">
+  <source-code lang="HTML">
+    <template>
+      <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle Navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">
+            <i class="fa fa-home"></i>
+            <span>${router.title}</span>
+          </a>
+        </div></p>
+<pre><code><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"collapse navbar-collapse"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"bs-example-navbar-collapse-1"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"nav navbar-nav"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">repeat.for</span>=<span class="hljs-string">"row of router.navigation"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"$</span></span></span><span class="hljs-template-variable">{row.isActive ? 'active' : ''}</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">"</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href.bind</span>=<span class="hljs-string">"row.href"</span>&gt;</span>$</span><span class="hljs-template-variable">{row.title}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+
+      <span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"nav navbar-nav navbar-right"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"loader"</span> <span class="hljs-attr">if.bind</span>=<span class="hljs-string">"router.isNavigating"</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">i</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"fa fa-spinner fa-spin fa-2x"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">i</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">nav</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>This looks almost identical to the navbar HTML in our original <em>app.html</em> file. We&#39;ve basically extracted that and put it into this template. Instead of binding to <em>app${context.language.fileExtension}</em> though, it&#39;s now binding to <em>nav-bar${context.language.fileExtension}</em>.</p>
+<p>This is a very simple custom element with no real behavior, but it is complete and usable as shown above.</p>
+<p>Wait! I know what you are thinking. This custom element is so simple...it seems a bit silly to require a ${context.language.name} class just to define the single <code>router</code> property. Couldn&#39;t we get rid of that somehow? Well, the answer is YES. For very simple elements which have no behavior but simply provide a view that can be bound to a set of properties, we can omit the ${context.language.name} file altogether. Let&#39;s see how that works.</p>
+<p>First, delete the <em>nav-bar${context.language.fileExtension}</em> file. Next, we need to make one change to the <em>nav-bar.html</em> file. On the template element, we can declare the bindable properties of our element like this:</p>
+<p><code-listing heading="nav-bar.html">
+  <source-code lang="HTML">
+    <template bindable="router">
+      ...
+    </template>
+  </source-code>
+</code-listing></p>
+<p>We can have more than one property by separating them by commas. Finally, we need to update our <em>app.html</em> file so that the <code>require</code> element points to our html component. Here&#39;s what it should look like:</p>
+<p><code-listing heading="app.html">
+  <source-code lang="HTML">
+    <template>
+      <require from="bootstrap/css/bootstrap.css"></require>
+      <require from="font-awesome/css/font-awesome.css"></require>
+      <require from='./nav-bar.html'></require></p>
+<pre><code>  <span class="hljs-tag">&lt;<span class="hljs-name">nav-bar</span> <span class="hljs-attr">router.bind</span>=<span class="hljs-string">"router"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">nav-bar</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"page-host"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">router-view</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">router-view</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<blockquote>
+<p>Info: View Encapsulation
+Anything required into a view with the <code>require</code> element has visibility only inside that view. As a result, you don&#39;t have to worry about name conflicts between various view resources. For convenience, you can also load app-wide elements and other behaviors during your application&#39;s bootstrapping phase.</p>
+</blockquote>
+<p>You may wonder how Aurelia determines the name of the custom element. By convention, it will use the export name of the class, lowered and hyphenated. In our html-only scenario, it will use the file name.</p>
+<p>In addition to creating custom elements, you can also create custom attributes which add new behavior to existing elements. On occasion you may even need an attribute to dynamically control templates by adding and removing DOM from the view, like the <code>repeat</code> and <code>if</code> we used above. You can do all that and much more with Aurelia&#39;s powerful and extensible templating engine. Here&#39;s a secret...none of Aurelia&#39;s so-called &quot;built in&quot; behaviors are actually built in. They are in their own library and are &quot;installed&quot; into Aurelia as a plugin. We provide our built-ins using the same core that you have to build your own apps and plugins.</p>
+<h2 id="-bonus-leveraging-child-routers-aurelia-doc-section-7-version-1-0-0-"><a href="aurelia-doc://section/7/version/1.0.0">Bonus: Leveraging Child Routers</a></h2>
+<p>Can&#39;t get enough can you? Well, I&#39;ve got a treat for you. Let&#39;s add a third page to our app...with its own router! We call this a child router. Child routers have their own route configuration and navigate relative to the parent router. Prepare thyself for insanity....</p>
+<p>First, let&#39;s update our <em>app${context.language.fileExtension}</em> with the new configuration. Here&#39;s what it should look like:</p>
+<p><code-listing heading="app${context.language.fileExtension} (updated...again)">
+  <source-code lang="ES 2015/2016">
+    export class App {
+      configureRouter(config, router) {
+        config.title = &#39;Aurelia&#39;;
+        config.map([
+          { route: [&#39;&#39;,&#39;welcome&#39;],  name: &#39;welcome&#39;,      moduleId: &#39;./welcome&#39;,      nav: true, title:&#39;Welcome&#39; },
+          { route: &#39;users&#39;,         name: &#39;users&#39;,        moduleId: &#39;./users&#39;,        nav: true, title:&#39;Github Users&#39; },
+          { route: &#39;child-router&#39;,  name: &#39;child-router&#39;, moduleId: &#39;./child-router&#39;, nav: true, title:&#39;Child Router&#39; }
+        ]);</p>
+<pre><code>    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {RouterConfiguration, Router} from &#39;aurelia-router&#39;;</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+<span class="hljs-symbol">  router:</span> Router;
+
+  configureRouter(<span class="hljs-string">config:</span> RouterConfiguration, <span class="hljs-string">router:</span> Router) {
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">''</span>,<span class="hljs-string">'welcome'</span>],  <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>,      <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./welcome'</span>,      <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'users'</span>,         <span class="hljs-string">name:</span> <span class="hljs-string">'users'</span>,        <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./users'</span>,        <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Github Users'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'child-router'</span>,  <span class="hljs-string">name:</span> <span class="hljs-string">'child-router'</span>, <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./child-router'</span>, <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Child Router'</span> }
+    ]);
+
+    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>Nothing new there. The interesting part is what&#39;s inside <em>child-router${context.language.fileExtension}</em>...</p>
+<p><code-listing heading="child-router${context.language.fileExtension}">
+  <source-code lang="ES 2016">
+    export class ChildRouter {
+      heading = &#39;Child Router&#39;;</p>
+<pre><code>  configureRouter(config, router){
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">''</span>,<span class="hljs-string">'welcome'</span>],  <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>,       <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./welcome'</span>,       <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'users'</span>,         <span class="hljs-string">name:</span> <span class="hljs-string">'users'</span>,         <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./users'</span>,         <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Github Users'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'child-router'</span>,  <span class="hljs-string">name:</span> <span class="hljs-string">'child-router'</span>,  <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./child-router'</span>,  <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Child Router'</span> }
+    ]);
+
+    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    export class ChildRouter {
+      constructor() {
+        this.heading = &#39;Child Router&#39;;
+      }</p>
+<pre><code>  configureRouter(config, router) {
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">''</span>,<span class="hljs-string">'welcome'</span>],  <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>,       <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./welcome'</span>,       <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'users'</span>,         <span class="hljs-string">name:</span> <span class="hljs-string">'users'</span>,         <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./users'</span>,         <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Github Users'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'child-router'</span>,  <span class="hljs-string">name:</span> <span class="hljs-string">'child-router'</span>,  <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./child-router'</span>,  <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Child Router'</span> }
+    ]);
+
+    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {RouterConfiguration, Router} from &#39;aurelia-router&#39;;</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ChildRouter</span> {</span>
+<span class="hljs-symbol">  heading:</span> string = <span class="hljs-string">'Child Router'</span>;
+<span class="hljs-symbol">  router:</span> Router;
+
+  configureRouter(<span class="hljs-string">config:</span> RouterConfiguration, <span class="hljs-string">router:</span> Router) {
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">''</span>,<span class="hljs-string">'welcome'</span>],  <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>,       <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./welcome'</span>,       <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'users'</span>,         <span class="hljs-string">name:</span> <span class="hljs-string">'users'</span>,         <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./users'</span>,         <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Github Users'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'child-router'</span>,  <span class="hljs-string">name:</span> <span class="hljs-string">'child-router'</span>,  <span class="hljs-string">moduleId:</span> <span class="hljs-string">'./child-router'</span>,  <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Child Router'</span> }
+    ]);
+
+    <span class="hljs-keyword">this</span>.router = router;
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>What!? It&#39;s practically the same configuration as <code>App</code>? What? Why? Well...you should probably never do this in real life...but it&#39;s pretty cool what this does. This, my friends, is a recursive router, and we&#39;re doing it because we can.</p>
+<p>For completeness, here&#39;s the view:</p>
+<p><code-listing heading="child-router.html">
+  <source-code lang="HTML">
+    <template>
+      <section>
+        <h2>${heading}</h2>
+        <div>
+          <div class="col-md-2">
+            <ul class="well nav nav-pills nav-stacked">
+              <li repeat.for="row of router.navigation" class="${row.isActive ? 'active' : ''}">
+                <a href.bind="row.href">${row.title}</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-10" style="padding: 0">
+            <router-view></router-view>
+          </div>
+        </div>
+      </section>
+    </template>
+  </source-code>
+</code-listing></p>
+<p>Run the app and see the magic....and pray the universe doesn&#39;t explode.</p>
+<h2 id="-conclusion-aurelia-doc-section-8-version-1-0-0-"><a href="aurelia-doc://section/8/version/1.0.0">Conclusion</a></h2>
+<p>With its strong focus on developer experience, Aurelia can enable you to not only create amazing applications, but also enjoy the process. We&#39;ve designed it with simple conventions in mind so you don&#39;t need to waste time with tons of configuration or write boilerplate code just to satisfy a stubborn or restrictive framework. You&#39;ll never hit a roadblock with Aurelia either. It&#39;s been carefully designed to be pluggable and customizable.</p>
+<p>Thanks for taking the time to read through our guide. We hope you&#39;ll explore the docs and build something awesome. We look forward to seeing what you will make.</p>

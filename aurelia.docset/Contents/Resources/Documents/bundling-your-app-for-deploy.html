@@ -1,0 +1,330 @@
+<hr>
+<p>{
+  &quot;name&quot;: &quot;Bundling Your App for Deploy&quot;,
+  &quot;culture&quot;: &quot;en-US&quot;,
+  &quot;description&quot;: &quot;Before deploying your app to production, you&#39;ll want to bundle the assets for efficient use of the network.&quot;,
+  &quot;engines&quot; : { &quot;aurelia-doc&quot; : &quot;^1.0.0&quot; },
+  &quot;author&quot;: {
+      &quot;name&quot;: &quot;Ahmed Shuhel&quot;,
+      &quot;url&quot;: &quot;<a href="https://github.com/ahmedshuhel">https://github.com/ahmedshuhel</a>&quot;
+  },
+  &quot;contributors&quot;: [],
+  &quot;translators&quot;: [],
+  &quot;keywords&quot;: [&quot;Deploy&quot;, &quot;Bundling&quot;]</p>
+<h2 id="-">}</h2>
+<h2 id="-introduction-aurelia-doc-section-1-version-1-0-0-"><a href="aurelia-doc://section/1/version/1.0.0">Introduction</a></h2>
+<p>Most of the current major browsers limit the number of simultaneous connections per hostname to six. This means that while six requests are being processed, additional requests for assets on a host will be queued by the browser. In the image below, the Chrome F12 developer tools network tab shows the timing for assets required by the <code>welcome view</code> of the skeleton-navigation application.</p>
+<p><img src="img/unbundled-aurelia-application.jpg" alt="No of requests made by unbundled application"></p>
+<p>As we can see, there are over 95 requests being made to load the first view. While the first few requests are being processed the others are waiting, ultimately taking almost 2.39s on a local machine.</p>
+<p>In the past, the most common browser limit has been 2 connections. This may have been sufficient in the beginning of the web when most of the content was delivered in a single page load. However, it can soon become the bottleneck when building rich client applications with frameworks like Aurelia and others.</p>
+<p>You may wonder: If this limit can have such a great impact on performance, then why don&#39;t browsers give us a higher limit? Most well-known browsers choose not to grant this wish in order to prevent the server from being overloaded by a small number of browsers. Such activity would be similar in nature to a DDOS attack.</p>
+<h2 id="-bundling-minification-aurelia-doc-section-2-version-1-0-0-"><a href="aurelia-doc://section/2/version/1.0.0">Bundling &amp; Minification</a></h2>
+<p>This connection limit will not cause slowness in our application if we can manage resources well enough to avoid it. When the page is first loaded, this is the initial request that returns HTML content. When the browser processes the HTML content, it spawns more requests to load resources like JS, CSS and images. It also executes JavaScript and sends AJAX requests to the server.</p>
+<p>To make this process efficient, we need to compress the assets and make fewer (possibly less than 6) requests to load everything we need. Fortunately, static resources can be cached and only downloaded the first time. If they cause slowness, it happens on the first page load only and may be tolerable.</p>
+<p>Bundling along with minification are techniques that can also be used to improve load time. Bundling and minification improve load time by reducing the number of requests to the server as well as reducing the size of requested assets such as views, view-models and CSS.</p>
+<h2 id="-bundling-an-aurelia-application-aurelia-doc-section-3-version-1-0-0-"><a href="aurelia-doc://section/3/version/1.0.0">Bundling an Aurelia Application</a></h2>
+<p>We can  use <a href="http://github.com/aurelia/bundler">Aurelia Bundler</a> to create a gulp task for bundling our app. Let&#39;s jump right into it. We will use the <code>skeleton-navigation</code> as our app to bundle. If you don&#39;t have that set up. Follow <a href="https://github.com/aurelia/skeleton-navigation#running-the-app">these steps</a>.</p>
+<p>Now that we have our app running, let&#39;s start by installing <code>aurelia-bundler</code>. To do so <code>cd</code> into <code>skeleton-navigation</code> and run the following command:</p>
+<pre><code class="lang-shell">npm <span class="hljs-keyword">install </span>aurelia-<span class="hljs-keyword">bundler </span>--save-dev
+</code></pre>
+<p>Now, let&#39;s create a <code>bundle.js</code> file in <code>build/tasks/bundle.js</code> as follows:</p>
+<p><code-listing heading="bundle.js">
+  <source-code lang="JavaScript">
+    var gulp = require(&#39;gulp&#39;);
+    var bundle = require(&#39;aurelia-bundler&#39;).bundle;</p>
+<pre><code>var config = {
+  force: <span class="hljs-keyword">true</span>,
+  baseURL: <span class="hljs-string">'.'</span>,                   <span class="hljs-comment">// baseURL of the application</span>
+  configPath: <span class="hljs-string">'./config.js'</span>,      <span class="hljs-comment">// config.js file. Must be within `baseURL`</span>
+  bundles: {
+    <span class="hljs-string">"dist/app-build"</span>: {           <span class="hljs-comment">// bundle name/path. Must be within `baseURL`. Final path is: `baseURL/dist/app-build.js`.</span>
+      <span class="hljs-keyword">includes</span>: [
+        <span class="hljs-string">'[*.js]'</span>,
+        <span class="hljs-string">'*.html!text'</span>,
+        <span class="hljs-string">'*.css!text'</span>,        
+      ],
+      <span class="hljs-keyword">options</span>: {
+        <span class="hljs-keyword">inject</span>: <span class="hljs-keyword">true</span>,
+        minify: <span class="hljs-keyword">true</span>
+      }
+    },
+    <span class="hljs-string">"dist/vendor-build"</span>: {
+      <span class="hljs-keyword">includes</span>: [
+        <span class="hljs-string">'aurelia-bootstrapper'</span>,
+        <span class="hljs-string">'aurelia-fetch-client'</span>,
+        <span class="hljs-string">'aurelia-router'</span>,
+        <span class="hljs-string">'aurelia-animator-css'</span>,
+        <span class="hljs-string">'github:aurelia/templating-binding'</span>,
+        <span class="hljs-string">'github:aurelia/templating-resources'</span>,
+        <span class="hljs-string">'github:aurelia/templating-router'</span>,
+        <span class="hljs-string">'github:aurelia/loader-default'</span>,
+        <span class="hljs-string">'github:aurelia/history-browser'</span>,
+        <span class="hljs-string">'github:aurelia/logging-console'</span>,
+        <span class="hljs-string">'bootstrap/css/bootstrap.css!text'</span>
+      ],
+      <span class="hljs-keyword">options</span>: {
+        <span class="hljs-keyword">inject</span>: <span class="hljs-keyword">true</span>,
+        minify: <span class="hljs-keyword">true</span>
+      }
+    }
+  }
+};
+
+gulp.<span class="hljs-keyword">task</span>(<span class="hljs-string">'bundle'</span>, function() {
+  <span class="hljs-keyword">return</span> bundle(config);
+});
+</code></pre><p>  </source-code>
+</code-listing></p>
+<blockquote>
+<p>Info
+The bundle function returns a Promise for proper integration into async task engines like Gulp.</p>
+</blockquote>
+<p>With that file in place, let&#39;s run the command bellow:</p>
+<pre><code class="lang-shell"><span class="hljs-attribute">gulp</span> bundle
+</code></pre>
+<p>Here are the things that should have happened after Gulp is finished executing the bundle task:</p>
+<ul>
+<li>A file, <code>dist/app-build.js</code> is created.</li>
+<li>A file, <code>dist/vendor-build.js</code> is created.</li>
+<li><code>config.js</code> is updated.</li>
+</ul>
+<p>Now, if we refresh/reload the app from the browser, we will see much less network traffic. This means that our app is properly bundled.</p>
+<p><img src="img/bundled-aurelia-application.jpg" alt="No of requests made by bundled application"></p>
+<p>Just 9 requests tells the story. We have also managed to minimize the size from 1.2MB to just 773KB here.</p>
+<h2 id="-multiple-bundles-aurelia-doc-section-4-version-1-0-0-"><a href="aurelia-doc://section/4/version/1.0.0">Multiple Bundles</a></h2>
+<p>We can create as many bundles as we want. Here we have created two: one for our application code and another for Aurelia and third-party libraries.</p>
+<p>We can create just a single bundle, if we want, that combines both application code and third-party libraries. The number of bundles we would like to have mostly depends on our application structure and the usage patterns of our app. For example, if our app was built in a modular fashion, such that it is a collection of child-app/sections, then a <code>common</code> bundle for third-party libraries and a <code>bundle per section</code> makes much more sense and performs better than a huge single bundle that needs to be loaded up front.</p>
+<h2 id="-duplicate-modules-in-multiple-bundles-aurelia-doc-section-5-version-1-0-0-"><a href="aurelia-doc://section/5/version/1.0.0">Duplicate Modules in Multiple Bundles</a></h2>
+<p>Creating multiple bundles requires us to be extra careful because multiple bundles may contain duplicate modules. Before explaining that, we need to understand how bundling works behind the scenes a bit. Let&#39;s consider the example modules <code>A</code> and <code>B</code> below:</p>
+<p><code-listing heading="a.js">
+  <source-code lang="JavaScript">
+    import b from &#39;./b&#39;;
+    console.log(&#39;Hi, I am module A&#39;);
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="b.js">
+  <source-code lang="JavaScript">
+    console.log(&#39;Hi, I am module B&#39;);
+  </source-code>
+</code-listing></p>
+<p>When we want to bundle <code>a.js</code>, the bundler will analyze the source code of the module and find the dependencies by tracing the <code>import</code> statements. In this case, the bundler will yield <code>b.js</code> as the dependency of <code>a.js</code> and ultimately place <code>b.js</code> in the bundle.</p>
+<p>Let us now take a closer look at the <code>config</code> object. We will skip <code>force</code> and <code>packagePath</code> for the moment. <code>bundles</code> is where we will focus now, specifically the <code>includes</code>.</p>
+<p><code-listing heading="Includes">
+  <source-code lang="JavaScript">
+    bundles: {
+      &quot;dist/app-build&quot;: {
+        includes: [
+          &#39;[<em>.js]&#39;,
+          &#39;</em>.html!text&#39;,
+          &#39;*.css!text&#39;,<br>        ],
+  </source-code>
+</code-listing></p>
+<p>Please pay attention to the pattern <code>[*.js]</code>. The bundler supports some glob patterns like <code>*.js</code>, <code>*/**/*.js</code> etc. <code>*.js</code> here means, we are interested in bundling all the <code>js</code> assets in the <code>dist</code> folder (considering the <code>path</code> in <code>config.js</code>). So what does <code>[*.js]</code> mean here? Well, as we know, the bundler will trace the module dependencies from the import statements. Lot&#39;s of our code refers to the modules of <code>Aurelia</code> via <code>import</code> statements. For example:</p>
+<p><code-listing heading="users.js">
+  <source-code lang="JavaScript">
+    import {inject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;
+    import &#39;fetch&#39;;</p>
+<pre><code><span class="hljs-meta">@inject</span>(HttpClient)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Users</span></span>{
+  heading = <span class="hljs-string">'Github Users'</span>;
+  users = [];
+
+  constructor(http){
+    http.configure(config =&gt; {
+      config
+        .useStandardConfiguration()
+        .withBaseUrl(<span class="hljs-string">'https://api.github.com/'</span>);
+    });
+
+    <span class="hljs-keyword">this</span>.http = http;
+  }
+
+  activate(){
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.http.fetch(<span class="hljs-string">'users'</span>)
+      .then(response =&gt; response.json())
+      .then(users =&gt; <span class="hljs-keyword">this</span>.users = users);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>When the bundler analyzes this file it will find <code>aurelia-framework</code> and <code>aurelia-fetch-client</code> as it&#39;s dependencies and include them in the bundle. But the bundler does not stop there. It will recursively find the dependencies of <code>aurelia-framework</code> and <code>aurelia-fetch-client</code> and will go on until there is nothing left.</p>
+<p><code-listing heading="Includes">
+  <source-code lang="JavaScript">
+    bundles: {
+      &quot;dist/app-build&quot;: {
+        includes: [
+          &#39;<em>.js&#39;,
+          &#39;</em>.html!text&#39;,
+          &#39;*.css!text&#39;,<br>        ],
+  </source-code>
+</code-listing></p>
+<p>Having <code>*.js</code> in the above config will create a bundle containing lots of <code>Aurelia</code> libraries including <code>aurelia-framework</code> and <code>aurelia-fetch-client</code>. If we consider the second bundle config <code>dist/vendor-build</code>, we have &#39;aurelia-bootstrapper&#39; and &#39;aurelia-fetch-client&#39;. <code>aurelia-bootstrapper</code> will yield <code>aurelia-framework</code>. Ultimately, we will end up with duplicate modules in both the bundles.</p>
+<p>Our goal is to create a bundle of our application code only. We have to somehow instruct the bundler not to recursively trace the dependencies. Guess what? <code>[*.js]</code> is how we do it.   </p>
+<p><code>[*.js]</code> will exclude the dependencies of each module that the glob pattern <code>*.js</code> yields. In the above case it will exclude <code>aurelia-framework</code>, <code>aurelia-fetch-client</code> and so on.</p>
+<h2 id="-bundle-configuration-aurelia-doc-section-6-version-1-0-0-"><a href="aurelia-doc://section/6/version/1.0.0">Bundle Configuration</a></h2>
+<p>Here is a typical bundle configuration in all its glory:</p>
+<p><code-listing heading="Typical Bundle Configuration">
+  <source-code lang="JavaScript">
+    &quot;dist/app-build&quot;: {
+      includes: [
+        &#39;[<em>.js]&#39;,
+        &#39;</em>.html!text&#39;,
+        &#39;*.css!text&#39;,
+        &#39;bootstrap/css/bootstrap.css!text&#39;
+      ],
+      excludes: [
+        &#39;npm:core-js&#39;,
+        &#39;github:jspm/nodelibs-process&#39;
+      ],
+      options: {
+        inject: true,
+        minify: true,
+        rev: true
+      }
+    }
+  </source-code>
+</code-listing></p>
+<ul>
+<li><strong>dist/app-build</strong> : This is the name of the bundle and also where the bundle file will be placed. The name of the bundle file will be <code>app-build.js</code>. As the <code>baseURL</code> for <code>skeleton-navigation</code> pointed to <code>dist</code> folder, we named it <code>dist/app-build</code>.</li>
+<li><strong>includes</strong> : We will specify all the modules/files that we want to include here. Since all our JavaScript is in the <code>dist</code> folder and we have the <code>path</code> rule configured in <code>config.js</code> that points to the <code>dist</code> folder. If we simply specify <code>*</code> all our <code>js</code> modules will be included. We can specify <code>*/**/*</code> here if we want to include all the subfolders.</li>
+<li><strong><code>*.html!text</code></strong>: This includes all the templates/views in the bundle. The <code>!text</code> tells the Bundler and Loader that these files will be bundled and loaded using the <code>text</code> plugin.   </li>
+<li><strong><code>*.css!text</code></strong>: Like html templates, we are including all the css here. If you have previously used <code>plugin-css</code>, note that we are not using <code>!css</code> here. The Aurelia Loader uses <code>text</code> plugin for loading css to analyze and do other interesting things like <code>scoping</code> etc.</li>
+<li><strong>excludes</strong>: This is where we specify what we want to exclude from the bundle. For example, <code>*</code> includes all the JS files in the <code>dist</code> folder. For example, if for some reason we want <code>app.js</code> to be excluded from the bundle, we would write:</li>
+</ul>
+<p><code-listing heading="Excludes">
+  <source-code lang="JavaScript">
+    excludes : [
+       &#39;app&#39;,
+    ]
+  </source-code>
+</code-listing></p>
+<ul>
+<li><strong>inject</strong>: If set to <code>true</code>, this will inject the bundle in <code>config.js</code>, so whenever the application needs a file within that bundle, the loader will load the entire bundle the first time. This is how we can achieve lazy bundle loading. For a large app with multiple sub sections, this will help us avoid loading everything upfront.</li>
+<li><strong>minify</strong>: As the name suggests, if this is set to <code>true</code>, the the source files will be minified as well.</li>
+<li><strong>rev</strong>: If this is set to <code>true</code>, an unique revision number will be appended to the bundle file name.</li>
+<li><strong>force</strong> : If this is set to <code>true</code> the task will overwrite any existing file/bundle with the same name. Set it to false if you are not sure about it.</li>
+<li><strong>packagePath</strong> : By default it is <code>&#39;.&#39;</code>, You can change this if your <code>package.json</code> file is somewhere else other than the base of your app. <code>aurelia-bundler</code> uses this file to find <code>config.js</code>, <code>baseURL</code>, the <code>jspm_packages</code> folder and other important project configuration.</li>
+</ul>
+<h2 id="-bundling-html-imports-aurelia-doc-section-7-version-1-0-0-"><a href="aurelia-doc://section/7/version/1.0.0">Bundling HTML Imports</a></h2>
+<p>At this point, if you are thinking: &quot;Well, this is all good but we have already developed an application that uses Polymer and  <code>HTML Imports</code> extensively. We want to bundle them as well.&quot; As you may already know, we have created a separate plugin <a href="https://github.com/aurelia/html-import-template-loader">aurelia-html-import-template-loader</a> exclusively for this use case. We have bundling support for that too. This is how we can do it. It&#39;s actually a two part process. First let&#39;s install the <code>aurelia-html-import-template-loader</code> plugin with the command below:</p>
+<pre><code class="lang-shell"> jspm <span class="hljs-keyword">install</span> aurelia-html-<span class="hljs-keyword">import</span>-<span class="hljs-keyword">template</span>-loader
+</code></pre>
+<p>Now, let&#39;s open <code>src/main.js</code> and add this line:</p>
+<pre><code class="lang-javascript">aurelia<span class="hljs-selector-class">.use</span><span class="hljs-selector-class">.plugin</span>(<span class="hljs-string">'aurelia-html-import-template-loader'</span>)
+</code></pre>
+<p>After the change <code>main.js</code> should look like this:</p>
+<p><code-listing heading="main.js">
+  <source-code lang="JavaScript">
+    import &#39;bootstrap&#39;;</p>
+<pre><code>export function configure(aurelia) {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>;
+
+  aurelia.use.plugin(<span class="hljs-symbol">'aurelia</span>-html-import-template-loader')
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(a =&gt; a.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>With this little change Aurelia Loader will now use <code>HTML Imports</code> to load all the views. Now, back in our bundle task, we will add a <code>config</code> like this:</p>
+<p><code-listing heading="HTML Import Config">
+  <source-code lang="JavaScript">
+    &quot;dist/view-bundle&quot;: {
+      htmlimports: true,
+      includes: &#39;dist/*.html&#39;,
+      options: {
+        inject: {
+          indexFile : &#39;index.html&#39;,
+          destFile : &#39;dest_index.html&#39;,
+        }
+      }
+    }
+  </source-code>
+</code-listing></p>
+<p>We will also change the first bundle a little bit to exclude all the <code>html</code> and <code>css</code> files. Finally our <code>bundle.js</code> file should look like this:</p>
+<p><code-listing heading="Full HTML Import Bundle Config">
+  <source-code lang="JavaScript">
+    var gulp = require(&#39;gulp&#39;);
+    var bundle = require(&#39;aurelia-bundler&#39;).bundle;</p>
+<pre><code>var config = {
+  force: <span class="hljs-literal">true</span>,
+  packagePath: <span class="hljs-string">'.'</span>,
+  bundles: {
+    <span class="hljs-string">"dist/app-build"</span>: {
+      includes: [
+        <span class="hljs-string">'[*.js]'</span>
+      ],
+      options: {
+        inject: <span class="hljs-literal">true</span>,
+        minify: <span class="hljs-literal">true</span>
+      }
+    },
+    <span class="hljs-string">"dist/aurelia"</span>: {
+      includes: [
+        <span class="hljs-symbol">'aurelia</span>-bootstrapper',
+        <span class="hljs-symbol">'aurelia</span>-fetch-client',
+        <span class="hljs-symbol">'aurelia</span>-router',
+        <span class="hljs-symbol">'aurelia</span>-animator-css',
+        <span class="hljs-symbol">'github</span>:aurelia/templating-binding',
+        <span class="hljs-symbol">'github</span>:aurelia/templating-resources',
+        <span class="hljs-symbol">'github</span>:aurelia/templating-router',
+        <span class="hljs-symbol">'github</span>:aurelia/loader-default',
+        <span class="hljs-symbol">'github</span>:aurelia/history-browser',
+        <span class="hljs-symbol">'github</span>:aurelia/logging-console'
+      ],
+      options: {
+        inject: <span class="hljs-literal">true</span>,
+        minify: <span class="hljs-literal">true</span>
+      }
+    },
+    <span class="hljs-string">"dist/view-bundle"</span>: {
+      htmlimport: <span class="hljs-literal">true</span>,
+      includes: <span class="hljs-symbol">'dist</span>/*.html',
+      options: {
+        inject: {
+          indexFile : <span class="hljs-symbol">'index</span>.html',
+          destFile : <span class="hljs-symbol">'dest_index</span>.html'
+        }
+      }
+    }
+  }
+};
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>We have changed the source code (src/main.js), so we need to rebuild our app. The command below should do that:</p>
+<pre><code class="lang-shell"> <span class="hljs-attribute">gulp</span> serve
+</code></pre>
+<blockquote>
+<p>Info
+The <code>serve</code> task is already configured in such a way that it runs the <code>build</code> task first.</p>
+</blockquote>
+<p>Now, let&#39;s run <code>gulp bundle</code> from another console/tab. If we now refresh/reload our app from the browser, keeping the developer tools open, we should see the difference.</p>
+<blockquote>
+<p>Warning
+The order in which the tasks are run is important. The <code>build</code> removes all the files in <code>dist</code> folder. As a result, any bundle file in that folder will be deleted too. This is why we always have to run the <code>gulp bundle</code> after the <code>build</code> task is finished. If you are using <code>watch</code> you will have to be extra careful here. Every change you make in the source file will trigger a <code>build</code> task that clears the <code>dist</code> folder and any bundles as well.</p>
+</blockquote>
+<p>Let&#39;s examine the configuration one property at a time:</p>
+<ul>
+<li><strong>dist/view-bundle</strong> : The name of the bundle file is <code>view-bundle.html</code> and will be placed in <code>dist</code> folder.</li>
+<li><strong>htmlimport</strong> : This is what makes it different from other bundles. If this is set to <code>true</code> the bundler will treat it as a html import based bundle and Aurelia loader will give it a different treatment as well.</li>
+<li><strong>includes</strong>: This is where we will specify what goes in the bundle. All the glob patterns are supported here including arrays of patterns and <code>!</code> based exclusion. For example:</li>
+</ul>
+<p><code-listing heading="Glob Patterns">
+  <source-code lang="JavaScript">
+    includes : [&#39;dist/<em>*/</em>.html&#39;, &#39;!dist/movie/*.html&#39;]
+  </source-code>
+</code-listing></p>
+<p>The above pattern will bundle all the views in <code>dist</code> and its child folders except everything in the <code>dist/movie</code> folder.</p>
+<ul>
+<li><strong>options</strong> : if <code>inject</code> is set to <code>true</code> then a <code>&lt;link rel=&quot;import&quot; href=&quot;path/of/bundle.html&quot; &gt;</code> will be injected in the body of <code>index.html</code>. If you would like to keep your <code>index.html</code> clean and create a separate index file then you have to set <code>indexFile</code> and <code>destFile</code>.</li>
+</ul>
+<p><code-listing heading="HTML Import Injection Options">
+  <source-code lang="JavaScript">
+    indexFile: &#39;index.html&#39;,
+    destFile : &#39;dest_index.html&#39;
+  </source-code>
+</code-listing></p>
+<h2 id="-conclusion-aurelia-doc-section-8-version-1-0-0-"><a href="aurelia-doc://section/8/version/1.0.0">Conclusion</a></h2>
+<p>In this article, you&#39;ve learned both the why and how of bundling. We&#39;ve covered the <code>bundler</code> library, how to configure it for use with Gulp and demonstrated several different scenarios. To bundle your own app, we recommend that you begin with one of the configurations above and customize it. You may have a small app that makes sense as a single bundle or a larger one that can be broken down into features. Each application is different, but the bundler will help you to create the optimal deployment for your unique scenarios.</p>

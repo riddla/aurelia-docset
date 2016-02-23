@@ -1,0 +1,1660 @@
+<hr>
+<p>{
+  &quot;name&quot;: &quot;Cheat Sheet&quot;,
+  &quot;culture&quot;: &quot;en-US&quot;,
+  &quot;description&quot;: &quot;Forgot the syntax for bindings? Need to know how to create a custom attribute? This article contains answers to questions like those as well as a bunch of quick snippets for common tasks.&quot;,
+  &quot;engines&quot; : { &quot;aurelia-doc&quot; : &quot;^1.0.0&quot; },
+  &quot;author&quot;: {
+      &quot;name&quot;: &quot;Rob Eisenberg&quot;,
+      &quot;url&quot;: &quot;<a href="http://robeisenberg.com">http://robeisenberg.com</a>&quot;
+  },
+  &quot;contributors&quot;: [],
+  &quot;translators&quot;: [],
+  &quot;keywords&quot;: [&quot;Help&quot;, &quot;Cheat Sheet&quot;]</p>
+<h2 id="-">}</h2>
+<h2 id="-configuration-and-startup-aurelia-doc-section-1-version-1-0-0-"><a href="aurelia-doc://section/1/version/1.0.0">Configuration and Startup</a></h2>
+<p><code-listing heading="Bootstrapping Older Browsers">
+  <source-code lang="HTML">
+    <script src="jspm_packages/system.js"></script>
+    <script src="config.js"></script>
+    <script>
+      System.import(&#39;core-js&#39;).then(function() {
+        return System.import(&#39;polymer/mutationobservers&#39;);
+      }).then(function() {
+        System.import(&#39;aurelia-bootstrapper&#39;);
+      });
+    </script>
+  </source-code>
+</code-listing></p>
+<blockquote>
+<p>Warning: Promises in Edge
+Currently, the Edge browser has a serious performance problem with its Promise implementation. This deficiency can greatly increase startup time of your app. If you are targeting the Edge browser, it is highly recommended that you use the <a href="http://bluebirdjs.com/docs/getting-started.html">bluebird promise</a> library to replace Edge&#39;s native implementation. You can do this by simply referencing the library prior to loading system.js.</p>
+</blockquote>
+<p><code-listing heading="Standard Startup Configuration">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging();</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>;
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Explicit Startup Configuration">
+  <source-code lang="ES 2015/2016">
+    import {LogManager} from &#39;aurelia-framework&#39;;
+    import {ConsoleAppender} from &#39;aurelia-logging-console&#39;;</p>
+<pre><code><span class="hljs-type">LogManager</span>.addAppender(new <span class="hljs-type">ConsoleAppender</span><span class="hljs-literal">()</span>);
+<span class="hljs-type">LogManager</span>.setLevel(<span class="hljs-type">LogManager</span>.logLevel.debug);
+
+export function configure(aurelia) {
+  aurelia.use
+    .defaultBindingLanguage<span class="hljs-literal">()</span>
+    .defaultResources<span class="hljs-literal">()</span>
+    .history<span class="hljs-literal">()</span>
+    .router<span class="hljs-literal">()</span>
+    .eventAggregator<span class="hljs-literal">()</span>;
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot(<span class="hljs-symbol">'app'</span>, document.body));
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {LogManager, Aurelia} from &#39;aurelia-framework&#39;;
+    import {ConsoleAppender} from &#39;aurelia-logging-console&#39;;</p>
+<pre><code><span class="hljs-type">LogManager</span>.addAppender(new <span class="hljs-type">ConsoleAppender</span><span class="hljs-literal">()</span>);
+<span class="hljs-type">LogManager</span>.setLevel(<span class="hljs-type">LogManager</span>.logLevel.debug);
+
+export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .defaultBindingLanguage<span class="hljs-literal">()</span>
+    .defaultResources<span class="hljs-literal">()</span>
+    .history<span class="hljs-literal">()</span>
+    .router<span class="hljs-literal">()</span>
+    .eventAggregator<span class="hljs-literal">()</span>;
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot(<span class="hljs-symbol">'app'</span>, document.body));
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Configuring A Feature">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging()
+        .feature(&#39;feature-name&#39;, featureConfiguration);</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>
+    .feature(<span class="hljs-symbol">'feature</span>-name', featureConfiguration);
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Installing a Plugin">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging()
+        .plugin(&#39;plugin-name&#39;, pluginConfiguration);</p>
+<pre><code>  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>
+    .plugin(<span class="hljs-symbol">'plugin</span>-name', pluginConfiguration);
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(<span class="hljs-literal">()</span> =&gt; aurelia.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-creating-components-aurelia-doc-section-2-version-1-0-0-"><a href="aurelia-doc://section/2/version/1.0.0">Creating Components</a></h2>
+<p>UI components consist of two parts: a view-model and a view. Simply create each part in its own file. Use the same file name but different file extensions for the two parts. For example: <em>hello${context.language.fileExtension}</em> and <em>hello.html</em>.</p>
+<p><code-listing heading="Explicit Configuration">
+  <source-code lang="ES 2015">
+    import {useView, decorators} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> Hello = decorators(useView(<span class="hljs-string">'./hello.html'</span>)).<span class="hljs-literal">on</span>(<span class="hljs-class"><span class="hljs-keyword">class</span> {</span>
+  ...
+});
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2016">
+    import {useView} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-meta">@useView</span>(<span class="hljs-string">'./hello.html'</span>)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Hello</span> </span>{
+  ...
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {useView} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-meta">@useView</span>(<span class="hljs-string">'./hello.html'</span>)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Hello</span> </span>{
+  ...
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h4 id="the-component-lifecycle">The Component Lifecycle</h4>
+<p>Components have a well-defined lifecycle:</p>
+<ol>
+<li><code>constructor()</code> - The view-model&#39;s constructor is called first.</li>
+<li><code>created(owningView: View, myView: View)</code> - If the view-model implements the <code>created</code> callback it is invoked next. At this point in time, the view has also been created and both the view-model and the view are connected to their controller. The created callback will receive the instance of the &quot;owningView&quot;. This is the view that the component is declared inside of. If the component itself has a view, this will be passed second.</li>
+<li><code>bind(bindingContext: Object, overrideContext: Object)</code> - Databinding is then activated on the view and view-model. If the view-model has a <code>bind</code> callback, it will be invoked at this time. The &quot;binding context&quot; to which the component is being bound will be passed first. An &quot;override context&quot; will be passed second. The override context contains information used to traverse the parent hierarchy and can also be used to add any contextual properties that the component wants to add.</li>
+<li><code>attached()</code> - Next, the component is attached to the DOM (in document). If the view-model has an <code>attached</code> callback, it will be invoked at this time.</li>
+<li><code>detached()</code> - At some point in the future, the component may be removed from the DOM. If/When this happens, and if the view-model has a <code>detached</code> callback, this is when it will be invoked.</li>
+<li><code>unbind()</code> - After a component is detached, it&#39;s usually unbound. If your view-model has the <code>unbind</code> callback, it will be invoked during this process.</li>
+</ol>
+<h2 id="-dependency-injection-aurelia-doc-section-3-version-1-0-0-"><a href="aurelia-doc://section/3/version/1.0.0">Dependency Injection</a></h2>
+<p><code-listing heading="Declaring Dependencies">
+  <source-code lang="ES 2016">
+    import {inject} from &#39;aurelia-framework&#39;;
+    import {Dep1} from &#39;dep1&#39;;
+    import {Dep2} from &#39;dep2&#39;;</p>
+<pre><code>@inject(Dep1, Dep2)
+export class CustomerDetail {
+ <span class="hljs-keyword"> constructor</span>(dep1, dep2) {
+    this.dep1 = dep1;
+    this.dep2 = dep2;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {Dep1} from &#39;dep1&#39;;
+    import {Dep2} from &#39;dep2&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> CustomerDetail <span class="hljs-comment">{
+  static inject() { return [Dep1, Dep2]; }</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">(dep1, dep2)</span> <span class="hljs-comment">{
+    this.dep1 = dep1;
+    this.dep2 = dep2;
+  }</span>
+}</span>
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {autoinject} from &#39;aurelia-framework&#39;;
+    import {Dep1} from &#39;dep1&#39;;
+    import {Dep2} from &#39;dep2&#39;;</p>
+<pre><code><span class="hljs-meta">@autoinject</span>
+export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomerDetail</span> {</span>
+  constructor(<span class="hljs-keyword">private</span> <span class="hljs-string">dep1:</span> Dep1, <span class="hljs-keyword">private</span> <span class="hljs-string">dep2:</span> Dep2){ }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Using Resolvers">
+  <source-code lang="ES 2016">
+    import {Lazy, inject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code>@inject(Lazy.of(HttpClient))
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomerDetail</span> </span>{
+  <span class="hljs-keyword">constructor</span>(getHTTP){
+    <span class="hljs-keyword">this</span>.getHTTP = getHTTP;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {Lazy} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> CustomerDetail <span class="hljs-comment">{
+  static inject() { return [Lazy.of(HttpClient)]; }</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">(getHTTP)</span><span class="hljs-comment">{
+    this.getHTTP = getHTTP;
+  }</span>
+}</span>
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Lazy, inject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code>@inject(Lazy.<span class="hljs-keyword">of</span>(HttpClient))
+export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomerDetail</span> {</span>
+  constructor(private getHTTP: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> HttpClient){ }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h4 id="available-resolvers">Available Resolvers</h4>
+<ul>
+<li><code>Lazy</code> - Injects a function for lazily evaluating the dependency.<ul>
+<li>ex. <code>Lazy.of(HttpClient)</code></li>
+</ul>
+</li>
+<li><code>All</code> - Injects an array of all services registered with the provided key.<ul>
+<li>ex. <code>All.of(Plugin)</code></li>
+</ul>
+</li>
+<li><code>Optional</code> - Injects an instance of a class only if it already exists in the container; null otherwise.<ul>
+<li>ex. <code>Optional.of(LoggedInUser)</code></li>
+</ul>
+</li>
+</ul>
+<p><code-listing heading="Explicit Registration">
+  <source-code lang="ES 2016">
+    import {transient, inject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code><span class="hljs-meta">@transient</span>()
+<span class="hljs-meta">@inject</span>(HttpClient)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomerDetail</span> </span>{
+  constructor(http) {
+    <span class="hljs-keyword">this</span>.http = http;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {transient, inject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> CustomDetail = decorators(
+  transient()
+  inject(HttpClient)
+).on(<span class="hljs-class"><span class="hljs-keyword">class</span> </span>{
+  <span class="hljs-keyword">constructor</span>(http) {
+    <span class="hljs-keyword">this</span>.http = http;
+  }
+});
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {transient, autoinject} from &#39;aurelia-framework&#39;;
+    import {HttpClient} from &#39;aurelia-fetch-client&#39;;</p>
+<pre><code><span class="hljs-variable">@transient</span>()
+<span class="hljs-variable">@autoinject</span>
+export class CustomerDetail {
+  <span class="hljs-selector-tag">constructor</span>(private <span class="hljs-attribute">http</span>: HttpClient) { }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-templating-basics-aurelia-doc-section-4-version-1-0-0-"><a href="aurelia-doc://section/4/version/1.0.0">Templating Basics</a></h2>
+<p><code-listing heading="A Simple Template">
+  <source-code lang="HTML">
+    <template>
+      <div>Hello World!</div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Requiring Resources">
+  <source-code lang="HTML">
+    <template>
+      <require from='nav-bar'></require></p>
+<pre><code>  <span class="hljs-tag">&lt;<span class="hljs-name">nav-bar</span> <span class="hljs-attr">router.bind</span>=<span class="hljs-string">"router"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">nav-bar</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"page-host"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">router-view</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">router-view</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Illegal Table Code">
+  <source-code lang="HTML">
+    <template>
+      <table>
+        <template repeat.for="customer of customers">
+          <tr>
+            <td>${customer.fullName}</td>
+          </tr>
+        </template>
+      </table>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Correct Table Code">
+  <source-code lang="HTML">
+    <template>
+      <table>
+        <tr repeat.for="customer of customers">
+          <td>${customer.fullName}</td>
+        </tr>
+      </table>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Illegal Select Code">
+  <source-code lang="HTML">
+    <template>
+      <select>
+        <template repeat.for="customer of customers">
+          <option>...</option>
+        </select>
+      </table>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Correct Select Code">
+  <source-code lang="HTML">
+    <template>
+      <select>
+        <option repeat.for="customer of customers">...</option>
+      </table>
+    </template>
+  </source-code>
+</code-listing></p>
+<h2 id="-databinding-aurelia-doc-section-5-version-1-0-0-"><a href="aurelia-doc://section/5/version/1.0.0">Databinding</a></h2>
+<h3 id="bind-one-way-two-way-one-time">bind, one-way, two-way &amp; one-time</h3>
+<p>Use on any HTML attribute.</p>
+<ul>
+<li><code>.bind</code> - Uses the default binding. One-way binding for everything but form controls, which use two-way binding.</li>
+<li><code>.one-way</code> - Flows data one direction: from the view-model to the view.</li>
+<li><code>.two-way</code> - Flows data both ways: from view-model to view and from view to view-model.</li>
+<li><code>.one-time</code> - Renders data once, but does not synchronize changes after the initial render.</li>
+</ul>
+<p><code-listing heading="Data Binding Examples">
+  <source-code lang="HTML">
+    <template>
+      <input type="text" value.bind="firstName">
+      <input type="text" value.two-way="lastName"></p>
+<pre><code>  <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href.one-way</span>=<span class="hljs-string">"profileUrl"</span>&gt;</span>View Profile<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<blockquote>
+<p>Info
+At the moment inheritance of bindables is not supported. For use cases where <code>class B extends A</code> and <code>B</code> is used as custom Element/Attribute <code>@bindable</code> properties cannot be defined only on <code>class A</code>. If inheritance is used, <code>@bindable</code> properties should be defined on the instantiated class.</p>
+</blockquote>
+<h3 id="delegate-trigger">delegate, trigger</h3>
+<p>Use on any native or custom DOM event. (Do not include the &quot;on&quot; prefix in the event name.)</p>
+<ul>
+<li><code>.trigger</code> - Attaches an event handler directly to the element. When the event fires, the expression will be invoked.</li>
+<li><code>.delegate</code> - Attaches a single event handler to the document (or nearest shadow DOM boundary) which handles all events of the specified type, properly dispatching them back to their original targets for invocation of the associated expression.</li>
+</ul>
+<blockquote>
+<p>Info
+The <code>$event</code> value can be passed as an argument to a <code>delegate</code> or <code>trigger</code> function call if you need to access the event object.</p>
+</blockquote>
+<p><code-listing heading="Event Binding Examples">
+  <source-code lang="HTML">
+    <template>
+      <button click.trigger="save()">Save</button>
+      <button click.delegate="save($event)">Save</button>
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="call">call</h3>
+<p>Passes a function reference.</p>
+<p><code-listing heading="Call Example">
+  <source-code lang="HTML">
+    <template>
+      <button my-attribute.call="sayHello()">Say Hello</button>
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="ref">ref</h3>
+<p>Creates a reference to an HTML element, a component or a component&#39;s parts.</p>
+<ul>
+<li><code>ref=&quot;someIdentifier&quot;</code> or <code>element.ref=&quot;someIdentifier&quot;</code> - Create a reference to the HTMLElement in the DOM.</li>
+<li><code>attribute-name.ref=&quot;someIdentifier&quot;</code>- Create a reference to a custom attribute&#39;s view-model.</li>
+<li><code>view-model.ref=&quot;someIdentifier&quot;</code>- Create a reference to a custom element&#39;s view-model.</li>
+<li><code>view.ref=&quot;someIdentifier&quot;</code>- Create a reference to a custom element&#39;s view instance (not an HTML Element).</li>
+<li><code>controller.ref=&quot;someIdentifier&quot;</code>- Create a reference to a custom element&#39;s controller instance.</li>
+</ul>
+<p><code-listing heading="Ref Example">
+  <source-code lang="HTML">
+    <template>
+      <input type="text" ref="name"> ${name.value}
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="string-interpolation">String Interpolation</h3>
+<p>Used in an element&#39;s content. Can be used inside attributes, particularly useful in the <code>class</code> and <code>css</code> attributes.</p>
+<p><code-listing heading="String Interpolation  Example">
+  <source-code lang="HTML">
+    <template>
+      <span>${fullName}</span>
+      <div class="dot ${color} ${isHappy ? 'green' : 'red'}"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="binding-to-select-elements">Binding to Select Elements</h3>
+<p>A typical select element is rendered using a combination of <code>value.bind</code> and <code>repeat</code>. You can also bind to arrays of objects and synchronize based on an id (or similar) property.</p>
+<p><code-listing heading="Basic Select">
+  <source-code lang="HTML">
+    <template>
+      <select value.bind="favoriteColor">
+        <option>Select A Color</option>
+        <option repeat.for="color of colors" value.bind="color">${color}</option>
+      </select>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Select with Object Array">
+  <source-code lang="HTML">
+    <template>
+      <select value.bind="employeeOfTheMonth">
+        <option>Select An Employee</option>
+        <option repeat.for="employee of employees" model.bind="employee">${employee.fullName}</option>
+      </select>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Select with Object Id Sync">
+  <source-code lang="HTML">
+    <template>
+      <select value.bind="employeeOfTheMonthId">
+        <option>Select An Employee</option>
+        <option repeat.for="employee of employees" model.bind="employee.id">${employee.fullName}</option>
+      </select>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Basic Multi-Select">
+  <source-code lang="HTML">
+    <template>
+      <select value.bind="favoriteColors" multiple>
+        <option repeat.for="color of colors" value.bind="color">${color}</option>
+      </select>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Multi-Select with Object Array">
+  <source-code lang="HTML">
+    <template>
+      <select value.bind="favoriteEmployees" multiple>
+        <option repeat.for="employee of employees" model.bind="employee">${employee.fullName}</option>
+      </select>
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="binding-radios">Binding Radios</h3>
+<p><code-listing heading="Basic Radios">
+  <source-code lang="HTML">
+    <template>
+      <label repeat.for="color of colors">
+        <input type="radio" name="clrs" value.bind="color" checked.bind="$parent.favoriteColor" />
+        ${color}
+      </label>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Radios with Object Arrays">
+  <source-code lang="HTML">
+    <template>
+      <label repeat.for="employee of employees">
+        <input type="radio" name="emps" model.bind="employee" checked.bind="$parent.employeeOfTheMonth" />
+        ${employee.fullName}
+      </label>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Radios with a Boolean">
+  <source-code lang="HTML">
+    <template>
+      <label><input type="radio" name="tacos" model.bind="null" checked.bind="likesTacos" />Unanswered</label>
+      <label><input type="radio" name="tacos" model.bind="true" checked.bind="likesTacos" />Yes</label>
+      <label><input type="radio" name="tacos" model.bind="false" checked.bind="likesTacos" />No</label>
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="binding-checkboxes">Binding Checkboxes</h3>
+<blockquote>
+<p>Warning
+You cannot use a <code>click.delegate</code> on checkboxes if you want to attach a method to it. You need to use <code>change.delegate</code>.</p>
+</blockquote>
+<p><code-listing heading="Checkboxes with an Array">
+  <source-code lang="HTML">
+    <template>
+      <label repeat.for="color of colors">
+        <input type="checkbox" value.bind="color" checked.bind="$parent.favoriteColors" />
+        ${color}
+      </label>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Checkboxes with an Array of Objects">
+  <source-code lang="HTML">
+    <template>
+      <label repeat.for="employee of employees">
+        <input type="checkbox" model.bind="employee" checked.bind="$parent.favoriteEmployees" />
+        ${employee.fullName}
+      </label>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Checkboxes with Booleans">
+  <source-code lang="HTML">
+    <template>
+      <li><label><input type="checkbox" checked.bind="wantsFudge" />Fudge</label></li>
+      <li><label><input type="checkbox" checked.bind="wantsSprinkles" />Sprinkles</label></li>
+      <li><label><input type="checkbox" checked.bind="wantsCherry" />Cherry</label></li>
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="binding-innerhtml-and-textcontext">Binding innerHTML and textContext</h3>
+<p><code-listing heading="Binding innerHTML">
+  <source-code lang="HTML">
+    <template>
+      <div innerhtml.bind="htmlProperty | sanitizeHTML"></div>
+      <div innerhtml="${htmlProperty | sanitizeHTML}"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<blockquote>
+<p>Danger
+Always use HTML sanitization. We provide a simple converter that can be used. You are encouraged to use a more complete HTML sanitizer such as <a href="https://www.npmjs.com/package/sanitize-html">sanitize-html</a>.</p>
+<p>Warning
+Binding using the <code>innerhtml</code> attribute simply sets the element&#39;s <code>innerHTML</code> property.  The markup does not pass through Aurelia&#39;s templating system.  Binding expressions and require elements will not be evaluated.</p>
+</blockquote>
+<p><code-listing heading="Binding textContent">
+  <source-code lang="HTML">
+    <template>
+      <div textcontent.bind="stringProperty"></div>
+      <div textcontent="${stringProperty}"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Two-Way Editable textContent">
+  <source-code lang="HTML">
+    <template>
+      <div textcontent.bind="stringProperty" contenteditable="true"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="binding-style">Binding Style</h3>
+<p>You can bind a css string or object to an element&#39;s <code>style</code> attribute. Use the <code>style</code> attribute&#39;s alias, <code>css</code> when doing string interpolation to ensure your application is compatible with Internet Explorer.</p>
+<p><code-listing heading="Style Binding Data">
+  <source-code lang="ES 2015/2016">
+    export class StyleData {
+      constructor() {
+        this.styleString = &#39;color: red; background-color: blue&#39;;</p>
+<pre><code>    this.styleObject = {
+      <span class="hljs-keyword">color</span>: <span class="hljs-string">'red'</span>,
+      <span class="hljs-string">'background-color'</span>: <span class="hljs-string">'blue'</span>
+    }<span class="hljs-comment">;</span>
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    export class StyleData {
+      styleString: string;
+      styleObject: any;</p>
+<pre><code>  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">()</span> <span class="hljs-comment">{
+    this.styleString = 'color: red; background-color: blue';
+
+    this.styleObject = {
+      color: 'red',
+      'background-color': 'blue'
+    }</span>;</span>
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Style Binding View">
+  <source-code lang="HTML">
+    <template>
+      <div style.bind="styleString"></div>
+      <div style.bind="styleObject"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Illegal Style Interpolation">
+  <source-code lang="HTML">
+    <template>
+      <div style="width: ${width}px; height: ${height}px;"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Legal Style Interpolation">
+  <source-code lang="HTML">
+    <template>
+      <div css="width: ${width}px; height: ${height}px;"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<h3 id="declaring-computed-property-dependencies">Declaring Computed Property Dependencies</h3>
+<p><code-listing heading="Computed Properties">
+  <source-code lang="ES 2015">
+    import {declarePropertyDependencies} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> {
+  firstName = <span class="hljs-string">'John'</span>;
+  lastName = <span class="hljs-string">'Doe'</span>;
+
+  <span class="hljs-function"><span class="hljs-keyword">get</span> <span class="hljs-title">fullName</span>(<span class="hljs-params"></span>)</span>{
+    <span class="hljs-keyword">return</span> `${<span class="hljs-keyword">this</span>.firstName} ${<span class="hljs-keyword">this</span>.lastName}`;
+  }
+}
+
+declarePropertyDependencies(Person, <span class="hljs-string">'fullName'</span>, [<span class="hljs-string">'firstName'</span>, <span class="hljs-string">'lastName'</span>]);
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2016">
+    import {computedFrom} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> </span>{
+  firstName = <span class="hljs-string">'John'</span>;
+  lastName = <span class="hljs-string">'Doe'</span>;
+
+  <span class="hljs-meta">@computedFrom</span>(<span class="hljs-string">'firstName'</span>, <span class="hljs-string">'lastName'</span>)
+  <span class="hljs-keyword">get</span> fullName(){
+    <span class="hljs-keyword">return</span> `${<span class="hljs-keyword">this</span>.firstName} ${<span class="hljs-keyword">this</span>.lastName}`;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {computedFrom} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> {
+  firstName: <span class="hljs-keyword">string</span> = <span class="hljs-string">'John'</span>;
+  lastName: <span class="hljs-keyword">string</span> = <span class="hljs-string">'Doe'</span>;
+
+  @computedFrom(<span class="hljs-string">'firstName'</span>, <span class="hljs-string">'lastName'</span>)
+  <span class="hljs-function"><span class="hljs-keyword">get</span> <span class="hljs-title">fullName</span>(<span class="hljs-params"></span>): <span class="hljs-keyword">string</span> </span>{
+    <span class="hljs-keyword">return</span> `${<span class="hljs-keyword">this</span>.firstName} ${<span class="hljs-keyword">this</span>.lastName}`;
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-templating-view-resources-aurelia-doc-section-6-version-1-0-0-"><a href="aurelia-doc://section/6/version/1.0.0">Templating View Resources</a></h2>
+<p><code-listing heading="Conditionally displays an HTML element.">
+  <source-code lang="HTML">
+    <template>
+      <div show.bind="isSaving" class="spinner"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Conditionally add/remove an HTML element.">
+  <source-code lang="HTML">
+    <template>
+      <div if.bind="isSaving" class="spinner"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Conditionally add/remove a group of elements.">
+  <source-code lang="HTML">
+    <template>
+      <input value.bind="firstName"></p>
+<pre><code><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">template</span> <span class="hljs-attr">if.bind</span>=<span class="hljs-string">"hasErrors"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">i</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"icon error"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">i</span>&gt;</span>
+      $</span><span class="hljs-template-variable">{errorMessage}</span><span class="xml">
+  <span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Render an array with a template.">
+  <source-code lang="HTML">
+    <template>
+      <ul>
+        <li repeat.for="customer of customers">${customer.fullName}</li>
+      </ul>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Render a map with a template.">
+  <source-code lang="HTML">
+    <template>
+      <ul>
+        <li repeat.for="[id, customer] of customers">${id} ${customer.fullName}</li>
+      </ul>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Render a template N times.">
+  <source-code lang="HTML">
+    <template>
+      <ul>
+        <li repeat.for="i of rating">*</li>
+      </ul>
+    </template>
+  </source-code>
+</code-listing></p>
+<p>Contextual items available inside a repeat template:</p>
+<ul>
+<li><code>$index</code> - The index of the item in the array.</li>
+<li><code>$first</code> - True if the item is the first item in the array.</li>
+<li><code>$last</code> - True if the item is the last item in the array.</li>
+<li><code>$even</code> - True if the item has an even numbered index.</li>
+<li><code>$odd</code> - True if the item has an odd numbered index.</li>
+</ul>
+<blockquote>
+<p>Info: Containerless Template Controllers
+The <code>if</code> and <code>repeat</code> attributes are usually placed on the HTML elements that they affect. However, you can also use a <code>template</code> tag to group a collection of elements that don&#39;t have a parent element and place the <code>if</code> or <code>repeat</code> on the <code>template</code> element instead.</p>
+</blockquote>
+<p><code-listing heading="Dynamically render UI into the DOM based on data.">
+  <source-code lang="HTML">
+    <template repeat.for="item of items">
+      <compose model.bind="item" view-model="widgets/${item.type}"></compose>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Composing a view only, inheriting the parent binding context.">
+  <source-code lang="HTML">
+    <template repeat.for="item of items">
+      <compose view="my-view.html"></compose>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Compose an existing object instance with a view.">
+  <source-code lang="HTML">
+    <template>
+      <div repeat.for="item of items">
+        <compose view="my-view.html" view-model.bind="item">
+      </div>
+    </template>
+  </source-code>
+</code-listing></p>
+<h2 id="-routing-aurelia-doc-section-7-version-1-0-0-"><a href="aurelia-doc://section/7/version/1.0.0">Routing</a></h2>
+<p><code-listing heading="Basic Route Configuration">
+  <source-code lang="ES 2015/2016">
+    export class App {
+      configureRouter(config, router) {
+        this.router = router;
+        config.title = &#39;Aurelia&#39;;
+        config.map([
+          { route: [&#39;&#39;, &#39;home&#39;],       name: &#39;home&#39;,       moduleId: &#39;home/index&#39; },
+          { route: &#39;users&#39;,            name: &#39;users&#39;,      moduleId: &#39;users/index&#39;,   nav: true },
+          { route: &#39;users/:id/detail&#39;, name: &#39;userDetail&#39;, moduleId: &#39;users/detail&#39; },
+          { route: &#39;files*path&#39;,       name: &#39;files&#39;,      moduleId: &#39;files/index&#39;,   href:&#39;#files&#39;,   nav: true }
+        ]);
+      }
+    }
+  </source-code>
+  <source-code lang="TypeScript">
+    import {RouterConfiguration, Router} from &#39;aurelia-router&#39;;</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+  configureRouter(<span class="hljs-string">config:</span> RouterConfiguration, <span class="hljs-string">router:</span> Router): <span class="hljs-keyword">void</span> {
+    <span class="hljs-keyword">this</span>.router = router;
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">''</span>, <span class="hljs-string">'home'</span>],       <span class="hljs-string">name:</span> <span class="hljs-string">'home'</span>,       <span class="hljs-string">moduleId:</span> <span class="hljs-string">'home/index'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'users'</span>,            <span class="hljs-string">name:</span> <span class="hljs-string">'users'</span>,      <span class="hljs-string">moduleId:</span> <span class="hljs-string">'users/index'</span>,   <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'users/:id/detail'</span>, <span class="hljs-string">name:</span> <span class="hljs-string">'userDetail'</span>, <span class="hljs-string">moduleId:</span> <span class="hljs-string">'users/detail'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'files*path'</span>,       <span class="hljs-string">name:</span> <span class="hljs-string">'files'</span>,      <span class="hljs-string">moduleId:</span> <span class="hljs-string">'files/index'</span>,   <span class="hljs-string">href:</span><span class="hljs-string">'#files'</span>,   <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span> }
+    ]);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h3 id="route-pattern-options">Route Pattern Options</h3>
+<ul>
+<li>static routes<ul>
+<li>ie &#39;home&#39; - Matches the string exactly.</li>
+</ul>
+</li>
+<li>parameterized routes<ul>
+<li>ie  &#39;users/:id/detail&#39; - Matches the string and then parses an <code>id</code> parameter. Your view-model&#39;s <code>activate</code> callback will be called with an object that has an <code>id</code> property set to the value that was extracted from the url.</li>
+</ul>
+</li>
+<li>wildcard routes<ul>
+<li>ie &#39;files*path&#39; - Matches the string and then anything that follows it. Your view-model&#39;s <code>activate</code> callback will be called with an object that has a <code>path</code> property set to the wildcard&#39;s value.</li>
+</ul>
+</li>
+</ul>
+<h3 id="the-screen-activation-lifecycle">The Screen Activation Lifecycle</h3>
+<ul>
+<li><code>canActivate(params, routeConfig, navigationInstruction)</code> - Implement this hook if you want to control whether or not your view-model <em>can be navigated to</em>. Return a boolean value, a promise for a boolean value, or a navigation command.</li>
+<li><code>activate(params, routeConfig, navigationInstruction)</code> - Implement this hook if you want to perform custom logic just before your view-model is displayed. You can optionally return a promise to tell the router to wait to bind and attach the view until after you finish your work.</li>
+<li><code>canDeactivate()</code> - Implement this hook if you want to control whether or not the router <em>can navigate away</em> from your view-model when moving to a new route. Return a boolean value, a promise for a boolean value, or a navigation command.</li>
+<li><code>deactivate()</code> - Implement this hook if you want to perform custom logic when your view-model is being navigated away from. You can optionally return a promise to tell the router to wait until after your finish your work.</li>
+</ul>
+<blockquote>
+<p>Info: Navigation Commands
+A <em>Navigation Command</em> is any object with a <code>navigate(router: Router)</code> method. When a navigation command is encountered, the current navigation will be cancelled and control will be passed to the navigation command so it can determine the correct action. Aurelia provides one navigation command out of the box: <code>Redirect</code>.</p>
+</blockquote>
+<p>The <code>params</code> object will have a property for each parameter of the route that was parsed, as well as a property for each query string value. <code>routeConfig</code> will be the original route configuration object that you set up. <code>routeConfig</code> will also have a new <code>navModel</code> property, which can be used to change the document title for data loaded by your view-model. For example:</p>
+<p><code-listing heading="Route Params and NavModel">
+  <source-code lang="ES 2016">
+    import {autoinject} from &#39;aurelia-framework&#39;;
+    import {UserService} from &#39;./user-service&#39;;</p>
+<pre><code><span class="hljs-meta">@inject</span>(UserService)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserEditScreen</span> </span>{
+  constructor(userService) {
+    <span class="hljs-keyword">this</span>.userService = userService;
+  }
+
+  activate(params, routeConfig) {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.userService.getUser(params.id)
+      .then(user =&gt; {
+        routeConfig.navModel.setTitle(user.name);
+      });
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {UserService} from &#39;./user-service&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> UserEditScreen <span class="hljs-comment">{
+  static inject() { return [UserService]; }</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">(userService)</span> <span class="hljs-comment">{
+    this.userService = userService;
+  }</span>
+
+  <span class="hljs-title">activate</span><span class="hljs-params">(<span class="hljs-keyword">params</span>, routeConfig)</span> <span class="hljs-comment">{
+    return this.userService.getUser(params.id)
+      .then(user =&gt; {
+        routeConfig.navModel.setTitle(user.name);
+      }</span>);</span>
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {autoinject} from &#39;aurelia-framework&#39;;
+    import {RouteConfig} from &#39;aurelia-router&#39;;
+    import {UserService} from &#39;./user-service&#39;;</p>
+<pre><code>@autoinject
+export class UserEditScreen {
+  <span class="hljs-attribute">constructor(userService</span>: UserService) { }
+
+  activate(params: any, routeConfig: RouteConfig): Promise&lt;any&gt; {
+    return this<span class="hljs-variable">.userService</span><span class="hljs-variable">.getUser</span>(params<span class="hljs-variable">.id</span>)
+      <span class="hljs-variable">.then</span>(user =&gt; {
+        routeConfig<span class="hljs-variable">.navModel</span><span class="hljs-variable">.setTitle</span>(user<span class="hljs-variable">.name</span>);
+      });
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Conventional Routing">
+  <source-code lang="ES 2015/2016">
+    export class App {
+      configureRouter(config){
+        config.mapUnknownRoutes(instruction =&gt; {
+          //check instruction.fragment
+          //return moduleId
+        });
+      }
+    }
+  </source-code>
+  <source-code lang="TypeScript">
+    import {RouterConfiguration} from &#39;aurelia-router&#39;;</p>
+<pre><code><span class="hljs-selector-tag">export</span> <span class="hljs-selector-tag">class</span> <span class="hljs-selector-tag">App</span> {
+  <span class="hljs-selector-tag">configureRouter</span>(<span class="hljs-attribute">config</span>: RouterConfiguration): <span class="hljs-selector-tag">void</span> {
+    <span class="hljs-selector-tag">config</span><span class="hljs-selector-class">.mapUnknownRoutes</span>(instruction =&gt; {
+      <span class="hljs-comment">//check instruction.fragment</span>
+      <span class="hljs-comment">//return moduleId</span>
+    });
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Customizing the Navigation Pipeline">
+  <source-code lang="ES 2015/2016">
+    import {Redirect} from &#39;aurelia-router&#39;;</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+  configureRouter(config) {
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.addPipelineStep(<span class="hljs-string">'authorize'</span>, AuthorizeStep);
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">'welcome'</span>],    <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>,       <span class="hljs-string">moduleId:</span> <span class="hljs-string">'welcome'</span>,      <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'flickr'</span>,       <span class="hljs-string">name:</span> <span class="hljs-string">'flickr'</span>,        <span class="hljs-string">moduleId:</span> <span class="hljs-string">'flickr'</span>,       <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">auth:</span> <span class="hljs-literal">true</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'child-router'</span>, <span class="hljs-string">name:</span> <span class="hljs-string">'childRouter'</span>,   <span class="hljs-string">moduleId:</span> <span class="hljs-string">'child-router'</span>, <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Child Router'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">''</span>, <span class="hljs-string">redirect:</span> <span class="hljs-string">'welcome'</span> }
+    ]);
+  }
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AuthorizeStep</span> {</span>
+  run(navigationInstruction, next) {
+    <span class="hljs-keyword">if</span> (navigationInstruction.getAllInstructions().some(i =&gt; i.config.auth)) {
+      var isLoggedIn = <span class="hljs-comment">/* insert magic here */</span><span class="hljs-literal">false</span>;
+      <span class="hljs-keyword">if</span> (!isLoggedIn) {
+        <span class="hljs-keyword">return</span> next.cancel(<span class="hljs-keyword">new</span> Redirect(<span class="hljs-string">'login'</span>));
+      }
+    }
+
+    <span class="hljs-keyword">return</span> next();
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Redirect, NavigationInstruction, RouterConfiguration} from &#39;aurelia-router&#39;;</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+  configureRouter(<span class="hljs-string">config:</span> RouterConfiguration): <span class="hljs-keyword">void</span> {
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.addPipelineStep(<span class="hljs-string">'authorize'</span>, AuthorizeStep);
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">'welcome'</span>],    <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>,       <span class="hljs-string">moduleId:</span> <span class="hljs-string">'welcome'</span>,      <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'flickr'</span>,       <span class="hljs-string">name:</span> <span class="hljs-string">'flickr'</span>,        <span class="hljs-string">moduleId:</span> <span class="hljs-string">'flickr'</span>,       <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">auth:</span> <span class="hljs-literal">true</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'child-router'</span>, <span class="hljs-string">name:</span> <span class="hljs-string">'childRouter'</span>,   <span class="hljs-string">moduleId:</span> <span class="hljs-string">'child-router'</span>, <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Child Router'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">''</span>, <span class="hljs-string">redirect:</span> <span class="hljs-string">'welcome'</span> }
+    ]);
+  }
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AuthorizeStep</span> {</span>
+  run(<span class="hljs-string">navigationInstruction:</span> NavigationInstruction, <span class="hljs-string">next:</span> Function): Promise&lt;any&gt; {
+    <span class="hljs-keyword">if</span> (navigationInstruction.getAllInstructions().some(i =&gt; i.config.auth)) {
+      var isLoggedIn = <span class="hljs-comment">/* insert magic here */</span><span class="hljs-literal">false</span>;
+      <span class="hljs-keyword">if</span> (!isLoggedIn) {
+        <span class="hljs-keyword">return</span> next.cancel(<span class="hljs-keyword">new</span> Redirect(<span class="hljs-string">'login'</span>));
+      }
+    }
+
+    <span class="hljs-keyword">return</span> next();
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h3 id="configuring-pushstate">Configuring PushState</h3>
+<p>Add <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base">a base tag</a> to the head of your html document. If you&#39;re using JSPM, you will also need to configure it with a <code>baseURL</code> corresponding to your base tag&#39;s <code>href</code>.</p>
+<p><code-listing heading="Push State">
+  <source-code lang="ES 2015/2016">
+    export class App {
+      configureRouter(config) {
+        config.title = &#39;Aurelia&#39;;
+        config.options.pushState = true;
+        config.map([
+          { route: [&#39;welcome&#39;],    name: &#39;welcome&#39;,     moduleId: &#39;welcome&#39;,      nav: true, title:&#39;Welcome&#39; },
+          { route: &#39;flickr&#39;,       name: &#39;flickr&#39;,      moduleId: &#39;flickr&#39;,       nav: true, auth: true },
+          { route: &#39;child-router&#39;, name: &#39;childRouter&#39;, moduleId: &#39;child-router&#39;, nav: true, title:&#39;Child Router&#39; },
+          { route: &#39;&#39;,             redirect: &#39;welcome&#39; }
+        ]);
+      }
+    }
+  </source-code>
+  <source-code lang="TypeScript">
+    import {Redirect, NavigationInstruction, RouterConfiguration} from &#39;aurelia-router&#39;;</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+  configureRouter(<span class="hljs-string">config:</span> RouterConfiguration): <span class="hljs-keyword">void</span> {
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.options.pushState = <span class="hljs-literal">true</span>;
+    config.map([
+      { <span class="hljs-string">route:</span> [<span class="hljs-string">'welcome'</span>],    <span class="hljs-string">name:</span> <span class="hljs-string">'welcome'</span>,     <span class="hljs-string">moduleId:</span> <span class="hljs-string">'welcome'</span>,      <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Welcome'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'flickr'</span>,       <span class="hljs-string">name:</span> <span class="hljs-string">'flickr'</span>,      <span class="hljs-string">moduleId:</span> <span class="hljs-string">'flickr'</span>,       <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">auth:</span> <span class="hljs-literal">true</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'child-router'</span>, <span class="hljs-string">name:</span> <span class="hljs-string">'childRouter'</span>, <span class="hljs-string">moduleId:</span> <span class="hljs-string">'child-router'</span>, <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">title:</span><span class="hljs-string">'Child Router'</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">''</span>,             <span class="hljs-string">redirect:</span> <span class="hljs-string">'welcome'</span> }
+    ]);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<blockquote>
+<p>Warning
+PushState requires server-side support. Don&#39;t forget to configure your server appropriately.</p>
+</blockquote>
+<h3 id="reusing-an-existing-vm">Reusing an existing VM</h3>
+<p>Since the VM&#39;s life-cycle is called only once you may have problems recognizing that the user switched the route from <code>Product A</code> to <code>Product B</code> (see below).  To work around this issue implement the method <code>determineActivationStrategy</code> in your VM and return hints for the router about what you&#39;d like to happen.</p>
+<blockquote>
+<p>Info
+Additionally, you can add an <code>activationStrategy</code> property to your route config if the strategy is always the same and you don&#39;t want that to be in your view-model code. Available values are <code>replace</code> and <code>invokeLifecycle</code>.</p>
+</blockquote>
+<p><code-listing heading="Router VM Activation Control">
+  <source-code lang="ES 2015/2016">
+    //app.js</p>
+<pre><code>export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+  configureRouter(config) {
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.map([
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'product/a'</span>,    <span class="hljs-string">moduleId:</span> <span class="hljs-string">'product'</span>,     <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'product/b'</span>,    <span class="hljs-string">moduleId:</span> <span class="hljs-string">'product'</span>,     <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span> },
+    ]);
+  }
+}
+
+<span class="hljs-comment">//product.js</span>
+
+<span class="hljs-keyword">import</span> {activationStrategy} from <span class="hljs-string">'aurelia-router'</span>;
+
+export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Product</span> {</span>
+  determineActivationStrategy(){
+    <span class="hljs-keyword">return</span> activationStrategy.replace;
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {RouterConfiguration} from &#39;aurelia-router&#39;;</p>
+<pre><code><span class="hljs-comment">//app.ts</span>
+
+export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> {</span>
+  configureRouter(<span class="hljs-string">config:</span> RouterConfiguration): <span class="hljs-keyword">void</span> {
+    config.title = <span class="hljs-string">'Aurelia'</span>;
+    config.map([
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'product/a'</span>,    <span class="hljs-string">moduleId:</span> <span class="hljs-string">'product'</span>,     <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span> },
+      { <span class="hljs-string">route:</span> <span class="hljs-string">'product/b'</span>,    <span class="hljs-string">moduleId:</span> <span class="hljs-string">'product'</span>,     <span class="hljs-string">nav:</span> <span class="hljs-literal">true</span> },
+    ]);
+  }
+}
+
+<span class="hljs-comment">//product.ts</span>
+
+<span class="hljs-keyword">import</span> {activationStrategy} from <span class="hljs-string">'aurelia-router'</span>;
+
+export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Product</span> {</span>
+  determineActivationStrategy(): string {
+    <span class="hljs-keyword">return</span> activationStrategy.replace;
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h3 id="rendering-multiple-viewports">Rendering multiple ViewPorts</h3>
+<blockquote>
+<p>Info
+If you don&#39;t name a <code>router-view</code>, it will be available under the name <code>&#39;default&#39;</code>.</p>
+</blockquote>
+<p><code-listing heading="Multi-ViewPort View">
+  <source-code lang="HTML">
+    <template>
+      <div class="page-host">
+        <router-view name="left"></router-view>
+      </div>
+      <div class="page-host">
+        <router-view name="right"></router-view>
+      </div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Multi-ViewPort View-Model">
+  <source-code lang="ES 2015/2016">
+    export class App {
+      configureRouter(config){
+        config.map([{
+          route: &#39;edit&#39;,
+            viewPorts: {
+              left: {
+                moduleId: &#39;editor&#39;
+              },
+              right: {
+                moduleId: &#39;preview&#39;
+              }
+            }
+          }]);
+      }
+    }
+  </source-code>
+  <source-code lang="TypeScript">
+    import {RouterConfiguration} from &#39;aurelia-router&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> App {
+  configureRouter(<span class="hljs-built_in">config</span>: RouterConfiguration): <span class="hljs-keyword">void</span> {
+    <span class="hljs-built_in">config</span>.<span class="hljs-built_in">map</span>([{
+      route: <span class="hljs-string">'edit'</span>,
+        viewPorts: {
+          left: {
+            moduleId: <span class="hljs-string">'editor'</span>
+          },
+          right: {
+            moduleId: <span class="hljs-string">'preview'</span>
+          }
+        }
+      }]);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h3 id="generating-route-urls">Generating Route URLs</h3>
+<p><code-listing heading="Generate Route URLs in Code">
+  <source-code lang="ES 2015/ES 2016/TypeScript">
+    router.generate(&#39;routeName&#39;, { id: 123 });
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Navigating to a Generated Route">
+  <source-code lang="ES 2015/ES 2016/TypeScript">
+    router.navigateToRoute(&#39;routeName&#39;, { id: 123 })
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Rendering an Anchor for a Route">
+  <source-code lang="HTML">
+    <template>
+      <a route-href="route: routeName; params.bind: { id: user.id }">${user.name}</a>
+    </template>
+  </source-code>
+</code-listing></p>
+<h2 id="-custom-attributes-aurelia-doc-section-8-version-1-0-0-"><a href="aurelia-doc://section/8/version/1.0.0">Custom Attributes</a></h2>
+<p><code-listing heading="Simple Attribute Declaration">
+  <source-code lang="ES 2016">
+    import {inject, customAttribute, DOM} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-meta">@customAttribute</span>(<span class="hljs-string">'my-attribute'</span>)
+<span class="hljs-meta">@inject</span>(DOM.<span class="hljs-built_in">Element</span>)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Show</span> </span>{
+  constructor(element) {
+    <span class="hljs-keyword">this</span>.element = element;
+  }
+
+  valueChanged(newValue, oldValue) {
+    ...
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {customAttribute, inject, decorators} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> MyAttribute = decorators(
+  customAttribute(<span class="hljs-string">'my-attribute'</span>),
+  inject(DOM.Element)
+).on(<span class="hljs-class"><span class="hljs-keyword">class</span> </span>{
+  <span class="hljs-keyword">constructor</span>(element) {
+    <span class="hljs-keyword">this</span>.element = element;
+  }
+
+  valueChanged(newValue, oldValue) {
+    ...
+  }
+});
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {inject, customAttribute, DOM} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-variable">@customAttribute</span>(<span class="hljs-string">'my-attribute'</span>)
+<span class="hljs-variable">@inject</span>(DOM.Element)
+export class Show {
+  <span class="hljs-selector-tag">constructor</span>(private <span class="hljs-attribute">element</span>: Element) { }
+
+  valueChanged(newValue, oldValue) {
+    ...
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Simple Attribute Use">
+  <source-code lang="HTML">
+    <template>
+      <div my-attribute="literal value"></div>
+      <div my-attribute.bind="an.expression"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Options Attribute Declaration">
+  <source-code lang="ES 2016">
+    import {customAttribute, bindable} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-variable">@customAttribute</span>(<span class="hljs-string">'my-attribute'</span>)
+export class MyAttribute {
+  <span class="hljs-variable">@bindable</span> foo;
+  <span class="hljs-variable">@bindable</span> bar;
+
+  <span class="hljs-selector-tag">fooChanged</span>(newValue, oldValue) { ... }
+
+  barChanged(newValue, oldValue) { ... }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {customAttribute, bindable, decorators} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> MyAttribute = decorators(
+  customAttribute(<span class="hljs-string">'my-attribute'</span>),
+  bindable(<span class="hljs-string">'foo'</span>),
+  bindable(<span class="hljs-string">'bar'</span>)
+).<span class="hljs-literal">on</span>(<span class="hljs-class"><span class="hljs-keyword">class</span> {</span>
+  fooChanged(newValue, oldValue) { ... }
+
+  barChanged(newValue, oldValue) { ... }
+});
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {customAttribute, bindable} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-variable">@customAttribute</span>(<span class="hljs-string">'my-attribute'</span>)
+export class MyAttribute {
+  <span class="hljs-variable">@bindable</span> <span class="hljs-attribute">foo</span>: any;
+  <span class="hljs-variable">@bindable</span> <span class="hljs-attribute">bar</span>: any;
+
+  <span class="hljs-selector-tag">fooChanged</span>(<span class="hljs-attribute">newValue</span>: any, <span class="hljs-attribute">oldValue</span>: any): <span class="hljs-selector-tag">void</span> { ... }
+
+  barChanged(<span class="hljs-attribute">newValue</span>: any, <span class="hljs-attribute">oldValue</span>: any): void  { ... }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Options Attribute Use">
+  <source-code lang="HTML">
+    <template>
+      <div my-attribute="foo: literal value; bar.bind: an.expression"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Dynamic Option Attribute Declaration">
+  <source-code lang="ES 2016">
+    import {customAttribute, dynamicOptions} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-variable">@customAttribute</span>(<span class="hljs-string">'my-attribute'</span>)
+<span class="hljs-variable">@dynamicOptions</span>
+export class MyAttribute {
+  <span class="hljs-selector-tag">propertyChanged</span>(propertyName, newValue, oldValue) { ... }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {customAttribute, dynamicOptions, decorators} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> MyAttribute = decorators(
+  customAttribute(<span class="hljs-string">'my-attribute'</span>),
+  dynamicOptions()
+).<span class="hljs-literal">on</span>(<span class="hljs-class"><span class="hljs-keyword">class</span> {</span>
+  propertyChanged(propertyName, newValue, oldValue) { ... }
+});
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {customAttribute, dynamicOptions} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-variable">@customAttribute</span>(<span class="hljs-string">'my-attribute'</span>)
+<span class="hljs-variable">@dynamicOptions</span>
+export class MyAttribute {
+  <span class="hljs-selector-tag">propertyChanged</span>(<span class="hljs-attribute">propertyName</span>: string, <span class="hljs-attribute">newValue</span>: any, <span class="hljs-attribute">oldValue</span>: any) { ... }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Dynamic Option Attribute Use">
+  <source-code lang="HTML">
+    <template>
+      <div my-attribute="foo: literal value; bar.bind: an.expression"></div>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Bindable Signature (Showing Defaults)">
+  <source-code lang="ES 2015/ES 2016/TypeScript">
+    bindable({
+      name:&#39;myProperty&#39;,
+      attribute:&#39;my-property&#39;,
+      changeHandler:&#39;myPropertyChanged&#39;,
+      defaultBindingMode: bindingMode.oneWay,
+      defaultValue: undefined
+    })
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Template Controller Attribute Declaration">
+  <source-code lang="ES 2016">
+    import {BoundViewFactory, ViewSlot, customAttribute, templateController, inject} from &#39;aurelia-framework&#39;;</p>
+<pre><code>@customAttribute(<span class="hljs-string">'naive-if'</span>)
+@templateController
+@inject(BoundViewFactory, ViewSlot)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NaiveIf</span> {</span>
+  constructor(viewFactory, viewSlot) {
+    <span class="hljs-keyword">this</span>.viewFactory = viewFactory;
+    <span class="hljs-keyword">this</span>.viewSlot = viewSlot;
+  }
+
+  valueChanged(newValue) {
+    <span class="hljs-keyword">if</span> (newValue) {
+      <span class="hljs-keyword">let</span> view = <span class="hljs-keyword">this</span>.viewFactory.create();
+      <span class="hljs-keyword">this</span>.viewSlot.add(view);
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">this</span>.viewSlot.removeAll();
+    }
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {BoundViewFactory, ViewSlot, customAttribute, templateController, inject} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> MyAttribute = decorators(
+  customAttribute(<span class="hljs-string">'naive-if'</span>)
+  templateController()
+  inject(BoundViewFactory, ViewSlot)
+).on(<span class="hljs-class"><span class="hljs-keyword">class</span> </span>{
+  <span class="hljs-keyword">constructor</span>(viewFactory, viewSlot) {
+    <span class="hljs-keyword">this</span>.viewFactory = viewFactory;
+    <span class="hljs-keyword">this</span>.viewSlot = viewSlot;
+  }
+
+  valueChanged(newValue) {
+    <span class="hljs-keyword">if</span> (newValue) {
+      <span class="hljs-keyword">let</span> view = <span class="hljs-keyword">this</span>.viewFactory.create();
+      <span class="hljs-keyword">this</span>.viewSlot.add(view);
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">this</span>.viewSlot.removeAll();
+    }
+  }
+});
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {BoundViewFactory, ViewSlot, customAttribute, templateController, autoinject} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-meta">@customAttribute</span>(<span class="hljs-string">'naive-if'</span>)
+<span class="hljs-meta">@templateController</span>
+<span class="hljs-meta">@autoinject</span>
+export <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NaiveIf</span> {</span>
+  constructor(<span class="hljs-keyword">private</span> <span class="hljs-string">viewFactory:</span> BoundViewFactory, <span class="hljs-keyword">private</span> <span class="hljs-string">viewSlot:</span> ViewSlot) { }
+
+  valueChanged(<span class="hljs-string">newValue:</span> any): <span class="hljs-keyword">void</span> {
+    <span class="hljs-keyword">if</span> (newValue) {
+      let view = <span class="hljs-keyword">this</span>.viewFactory.create();
+      <span class="hljs-keyword">this</span>.viewSlot.add(view);
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">this</span>.viewSlot.removeAll();
+    }
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Template Controller Attribute Use">
+  <source-code lang="HTML">
+    <template>
+      <div naive-if.bind="an.expression"></div></p>
+<pre><code>  &lt;<span class="hljs-keyword">template</span> naive-<span class="hljs-keyword">if</span>.<span class="hljs-keyword">bind</span>=<span class="hljs-string">"an.expression"</span>&gt;
+    &lt;<span class="hljs-keyword">div</span>&gt;&lt;/<span class="hljs-keyword">div</span>&gt;
+    &lt;<span class="hljs-keyword">div</span>&gt;&lt;/<span class="hljs-keyword">div</span>&gt;
+  &lt;/<span class="hljs-keyword">template</span>&gt;
+&lt;/<span class="hljs-keyword">template</span>&gt;
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-custom-elements-aurelia-doc-section-9-version-1-0-0-"><a href="aurelia-doc://section/9/version/1.0.0">Custom Elements</a></h2>
+<p><code-listing heading="Custom Element View-Model Declaration">
+  <source-code lang="ES 2016">
+    import {customElement, bindable} from &#39;aurelia-framework&#39;;</p>
+<pre><code>@customElement(<span class="hljs-string">'say-hello'</span>)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SayHello</span> {</span>
+  @bindable <span class="hljs-keyword">to</span>;
+
+  speak(){
+    alert(`Hello ${<span class="hljs-keyword">this</span>.<span class="hljs-keyword">to</span>}!`);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {customElement, bindable} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> SayHello = decorators(
+  customElement(<span class="hljs-string">'say-hello'</span>),
+  bindable(<span class="hljs-string">'to'</span>)
+).<span class="hljs-literal">on</span>(<span class="hljs-class"><span class="hljs-keyword">class</span> {</span>
+  speak(){
+    alert(`Hello ${<span class="hljs-keyword">this</span>.<span class="hljs-keyword">to</span>}!`);
+  }
+});
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {customElement, bindable} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-variable">@customElement</span>(<span class="hljs-string">'say-hello'</span>)
+export class SayHello {
+  <span class="hljs-variable">@bindable</span> <span class="hljs-attribute">to</span>: string;
+
+  <span class="hljs-selector-tag">speak</span>(): <span class="hljs-selector-tag">void</span> {
+    <span class="hljs-selector-tag">alert</span>(<span class="hljs-built_in">`Hello ${this.to}!`</span>);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Custom Element View Declaration">
+  <source-code lang="HTML">
+    <template>
+       <button click.trigger="speak()">Say Hello To ${to}</button>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Custom Element Use">
+  <source-code lang="HTML">
+    <template>
+      <require from="say-hello"></require></p>
+<pre><code>  &lt;input <span class="hljs-keyword">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-keyword">ref</span>=<span class="hljs-string">"name"</span>&gt;
+  &lt;say-hello to.<span class="hljs-keyword">bind</span>=<span class="hljs-string">"name.value"</span>&gt;&lt;/say-hello&gt;
+&lt;/<span class="hljs-keyword">template</span>&gt;
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h3 id="custom-element-options">Custom Element Options</h3>
+<ul>
+<li><code>@children(selector)</code> - Decorates a property to create an array on your class that has its items automatically synchronized based on a query selector against the element&#39;s immediate child content.</li>
+<li><code>@child(selector)</code> - Decorates a property to create a reference to a single immediate child content element.</li>
+<li><code>@processContent(false|Function)</code> - Tells the compiler that the element&#39;s content requires special processing. If you provide <code>false</code> to the decorator, the the compiler will not process the content of your custom element. It is expected that you will do custom processing yourself. But, you can also supply a custom function that lets you process the content during the view&#39;s compilation. That function can then return true/false to indicate whether or not the compiler should also process the content. The function takes the following form <code>function(compiler, resources, node, instruction):boolean</code></li>
+<li><code>@useView(path)</code> - Specifies a different view to use.</li>
+<li><code>@noView()</code> - Indicates that this custom element does not have a view and that the author intends for the element to handle its own rendering internally.</li>
+<li><code>@inlineView(markup, dependencies?)</code> - Allows the developer to provide a string that will be compiled into the view.</li>
+<li><code>@useShadowDOM()</code> - Causes the view to be rendered in the ShadowDOM. When an element is rendered to ShadowDOM, a special <code>DOMBoundary</code> instance can optionally be injected into the constructor. This represents the shadow root.</li>
+<li><code>@containerless()</code> - Causes the element&#39;s view to be rendered without the custom element container wrapping it. This cannot be used in conjunction with <code>@child</code>, <code>@children</code> or <code>@useShadowDOM</code> decorators. It also cannot be uses with surrogate behaviors. Use sparingly.</li>
+</ul>
+<h3 id="svg-elements">SVG Elements</h3>
+<p>SVG (scalable vector graphic) tags can support Aurelia&#39;s custom element <code>&lt;template&gt;</code> tags by  nesting the templated code inside a second <code>&lt;svg&gt;</code> tag. For example if you had a base <code>&lt;svg&gt;</code> element and wanted to add a templated <code>&lt;rect&gt;</code> inside it, you would first put your custom tag inside the main <code>&lt;svg&gt;</code> tag. Also, make sure the custom element class uses the <code>@containerless()</code> decorator.</p>
+<p><code-listing heading="SVG Custom Element View-Model Declaration">
+  <source-code lang="ES 2016">
+    import {containerless} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-meta">@containerless</span>()
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomRect</span> </span>{
+    ...
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {containerless} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> MyCustomRect = decorators(
+  containerless()
+).<span class="hljs-literal">on</span>(<span class="hljs-class"><span class="hljs-keyword">class</span> {</span>
+  ...
+});
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {containerless} from &#39;aurelia-framework&#39;;</p>
+<pre><code><span class="hljs-meta">@containerless</span>()
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomRect</span> </span>{
+    ...
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="SVG Custom Element View">
+  <source-code lang="HTML">
+    <template>
+        <svg>
+            <rect width="10" height="10" fill="red" x="50" y="50"/>
+        </svg>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="SVG Custom Element Use">
+  <source-code lang="HTML">
+    <template>
+        <require from="my-custom-rect"></require></p>
+<pre><code>    &lt;svg <span class="hljs-built_in">width</span>=<span class="hljs-string">"100"</span> <span class="hljs-built_in">height</span>=<span class="hljs-string">"100"</span> &gt;
+        &lt;my-custom-<span class="hljs-built_in">rect</span>&gt;&lt;/my-custom-<span class="hljs-built_in">rect</span>&gt;
+    &lt;/svg&gt;
+&lt;/<span class="hljs-keyword">template</span>&gt;
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h3 id="template-parts">Template Parts</h3>
+<p><code-listing heading="Custom Element View with Replaceable Parts">
+  <source-code lang="HTML">
+    <template>
+      <ul>
+        <li class="foo" repeat.for="item of items">
+          <template replaceable part="item-template">
+            Original: ${item}
+          </template>
+        </li>
+      <ul>
+    </template>
+  </source-code>
+</code-listing></p>
+<p><code-listing heading="Custom Element Use with Replacement">
+  <source-code lang="HTML">
+    <template>
+      <require from="my-element"></require></p>
+<pre><code><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">my-element</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">template</span> <span class="hljs-attr">replace-part</span>=<span class="hljs-string">"item-template"</span>&gt;</span>
+      Replacement: $</span><span class="hljs-template-variable">{item}</span><span class="xml">
+    <span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">my-element</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Surrogate Behavior Use">
+  <source-code lang="HTML">
+    <template role="progress-bar" aria-valuenow.bind="progress" aria-valuemin="0" aria-valuemax="100">
+      <div class="bar">
+        <div class="progress" css="width:${progress}%"></div>
+      </div>
+    </template>
+  </source-code>
+</code-listing></p>
+<h2 id="-the-event-aggregator-aurelia-doc-section-10-version-1-0-0-"><a href="aurelia-doc://section/10/version/1.0.0">The Event Aggregator</a></h2>
+<p><code-listing heading="Publishing on a Channel">
+  <source-code lang="ES 2016">
+    import {inject} from &#39;aurelia-framework&#39;;
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;</p>
+<pre><code>@inject(EventAggregator)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">APublisher</span> </span>{
+  <span class="hljs-keyword">constructor</span>(eventAggregator) {
+    <span class="hljs-keyword">this</span>.eventAggregator = eventAggregator;
+  }
+
+  publish(){
+    <span class="hljs-keyword">var</span> payload = {};
+    <span class="hljs-keyword">this</span>.eventAggregator.publish(<span class="hljs-string">'channel name here'</span>, payload);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> APublisher<span class="hljs-comment">{
+  static inject() { return [EventAggregator]; }</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">(eventAggregator)</span><span class="hljs-comment">{
+    this.eventAggregator = eventAggregator;
+  }</span>
+
+  <span class="hljs-title">publish</span><span class="hljs-params">()</span><span class="hljs-comment">{
+    var payload = {}</span>;</span>
+    this.eventAggregator.publish(<span class="hljs-string">'channel name here'</span>, payload);
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {autoinject} from &#39;aurelia-framework&#39;;
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;</p>
+<pre><code>@autoinject
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">APublisher</span> </span>{
+  <span class="hljs-keyword">constructor</span>(private eventAggregator: EventAggregator) { }
+
+  publish(): <span class="hljs-keyword">void</span> {
+    <span class="hljs-keyword">var</span> payload = {};
+    <span class="hljs-keyword">this</span>.eventAggregator.publish(<span class="hljs-string">'channel name here'</span>, payload);
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Subscribing to a Channel">
+  <source-code lang="ES 2016">
+    import {inject} from &#39;aurelia-framework&#39;;
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;</p>
+<pre><code><span class="hljs-meta">@inject</span>(EventAggregator)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ASubscriber</span> </span>{
+  constructor(eventAggregator) {
+    <span class="hljs-keyword">this</span>.eventAggregator = eventAggregator;
+  }
+
+  subscribe() {
+    <span class="hljs-keyword">this</span>.eventAggregator.subscribe(<span class="hljs-string">'channel name here'</span>, payload =&gt; {
+        ...
+    });
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> ASubscriber <span class="hljs-comment">{
+  static inject() { return [EventAggregator]; }</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">(eventAggregator)</span> <span class="hljs-comment">{
+    this.eventAggregator = eventAggregator;
+  }</span>
+
+  <span class="hljs-title">subscribe</span><span class="hljs-params">()</span> <span class="hljs-comment">{
+    this.eventAggregator.subscribe('channel name here', payload =&gt; {
+        ...
+    }</span>);</span>
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {autoinject} from &#39;aurelia-framework&#39;;
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;</p>
+<pre><code><span class="hljs-variable">@autoinject</span>
+export class ASubscriber {
+  <span class="hljs-selector-tag">constructor</span>(private <span class="hljs-attribute">eventAggregator</span>: EventAggregator) { }
+
+  subscribe(): void {
+    <span class="hljs-selector-tag">this</span><span class="hljs-selector-class">.eventAggregator</span><span class="hljs-selector-class">.subscribe</span>(<span class="hljs-string">'channel name here'</span>, payload =&gt; {
+        ...
+    });
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Publishing a Message">
+  <source-code lang="ES 2016">
+    //some-massage.js
+    export class SomeMessage{ }</p>
+<pre><code><span class="hljs-comment">//a-publisher.js</span>
+<span class="hljs-keyword">import</span> {inject} <span class="hljs-keyword">from</span> <span class="hljs-string">'aurelia-framework'</span>;
+<span class="hljs-keyword">import</span> {EventAggregator} <span class="hljs-keyword">from</span> <span class="hljs-string">'aurelia-event-aggregator'</span>;
+<span class="hljs-keyword">import</span> {SomeMessage} <span class="hljs-keyword">from</span> <span class="hljs-string">'./some-message'</span>;
+
+@inject(EventAggregator)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">APublisher</span> </span>{
+  <span class="hljs-keyword">constructor</span>(eventAggregator) {
+    <span class="hljs-keyword">this</span>.eventAggregator = eventAggregator;
+  }
+
+  publish() {
+    <span class="hljs-keyword">this</span>.eventAggregator.publish(<span class="hljs-keyword">new</span> SomeMessage());
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    //some-massage.js
+    export class SomeMessage{ }</p>
+<pre><code><span class="hljs-comment">//a-publisher.js</span>
+import <span class="hljs-comment">{EventAggregator}</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'aurelia-event-aggregator'</span>;
+import <span class="hljs-comment">{SomeMessage}</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'./some-message'</span>;
+
+export <span class="hljs-keyword">class</span> APublisher <span class="hljs-comment">{
+  static inject() { return [EventAggregator] }</span>;
+
+  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">(eventAggregator)</span> <span class="hljs-comment">{
+    this.eventAggregator = eventAggregator;
+  }</span>
+
+  <span class="hljs-title">publish</span><span class="hljs-params">()</span> <span class="hljs-comment">{
+    this.eventAggregator.publish(new SomeMessage());
+  }</span>
+}</span>
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    //some-massage.ts
+    export class SomeMessage{ }</p>
+<pre><code><span class="hljs-comment">//a-publisher.ts</span>
+<span class="hljs-keyword">import</span> {autoinject} <span class="hljs-keyword">from</span> <span class="hljs-string">'aurelia-framework'</span>;
+<span class="hljs-keyword">import</span> {EventAggregator} <span class="hljs-keyword">from</span> <span class="hljs-string">'aurelia-event-aggregator'</span>;
+<span class="hljs-keyword">import</span> {SomeMessage} <span class="hljs-keyword">from</span> <span class="hljs-string">'./some-message'</span>;
+
+@autoinject
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">APublisher</span> </span>{
+  <span class="hljs-keyword">constructor</span>(private eventAggregator: EventAggregator) { }
+
+  publish(): <span class="hljs-keyword">void</span> {
+    <span class="hljs-keyword">this</span>.eventAggregator.publish(<span class="hljs-keyword">new</span> SomeMessage());
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p><code-listing heading="Subscribing to a Message Type">
+  <source-code lang="ES 2016">
+    import {inject} from &#39;aurelia-framework&#39;;
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;
+    import {SomeMessage} from &#39;./some-message&#39;;</p>
+<pre><code><span class="hljs-meta">@inject</span>(EventAggregator)
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ASubscriber</span> </span>{
+  constructor(eventAggregator) {
+    <span class="hljs-keyword">this</span>.eventAggregator = eventAggregator;
+  }
+
+  subscribe(){
+    <span class="hljs-keyword">this</span>.eventAggregator.subscribe(SomeMessage, message =&gt; {
+        ...
+    });
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="ES 2015">
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;
+    import {SomeMessage} from &#39;./some-message&#39;;</p>
+<pre><code>export <span class="hljs-keyword">class</span> ASubscriber <span class="hljs-comment">{
+  static inject() { return [EventAggregator]; }</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">constructor</span><span class="hljs-params">(eventAggregator)</span> <span class="hljs-comment">{
+    this.eventAggregator = eventAggregator;
+  }</span>
+
+  <span class="hljs-title">subscribe</span><span class="hljs-params">()</span><span class="hljs-comment">{
+    this.eventAggregator.subscribe(SomeMessage, message =&gt; {
+        ...
+    }</span>);</span>
+  }
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {autoinject} from &#39;aurelia-framework&#39;;
+    import {EventAggregator} from &#39;aurelia-event-aggregator&#39;;
+    import {SomeMessage} from &#39;./some-message&#39;;</p>
+<pre><code><span class="hljs-variable">@autoinject</span>
+export class ASubscriber {
+  <span class="hljs-selector-tag">constructor</span>(private <span class="hljs-attribute">eventAggregator</span>: EventAggregator) { }
+
+  subscribe(): void {
+    <span class="hljs-selector-tag">this</span><span class="hljs-selector-class">.eventAggregator</span><span class="hljs-selector-class">.subscribe</span>(SomeMessage, message =&gt; {
+        ...
+    });
+  }
+}
+</code></pre><p>  </source-code>
+</code-listing></p>

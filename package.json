@@ -1,0 +1,23 @@
+{
+  "name": "aurelia-docset",
+  "version": "0.0.1",
+  "description": "Generate a Dash (https://kapeli.com/dash) docset for Aurelia (http://aurelia.io)",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/riddla/aurelia-docset"
+  },
+  "keywords": [
+    "aurelia",
+    "dash",
+    "docset"
+  ],
+  "author": "Volker Rose <volker.rose@gmail.com> (http://volker.rose.de/)",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "3.9.1",
+    "gulp-debug": "2.1.2",
+    "gulp-markdown": "1.2.0",
+    "highlight.js": "9.1.0",
+    "marked": "0.3.5"
+  }
+}

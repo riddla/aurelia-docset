@@ -1,0 +1,244 @@
+<hr>
+<p>{
+  &quot;name&quot;: &quot;Integrating with Polymer&quot;,
+  &quot;culture&quot;: &quot;en-US&quot;,
+  &quot;description&quot;: &quot;Polymer is a library for creating reusable web components declaratively with extra features like data binding and property observation. In many ways, it is similar to Aurelia&#39;s component support. However, Polymer also includes an extensive catalog of custom elements for everything from material design to credit card forms to embedding Google services like Google Maps and YouTube. With a bit of work, these components can be incorporated into Aurelia applications as well.&quot;,
+  &quot;engines&quot; : { &quot;aurelia-doc&quot; : &quot;^1.0.0&quot; },
+  &quot;author&quot;: {
+      &quot;name&quot;: &quot;Ben Navetta&quot;,
+      &quot;url&quot;: &quot;<a href="https://www.linkedin.com/in/benjaminnavetta">https://www.linkedin.com/in/benjaminnavetta</a>&quot;
+  },
+  &quot;contributors&quot;: [],
+  &quot;translators&quot;: [],
+  &quot;keywords&quot;: [&quot;Integration&quot;, &quot;Web Components&quot;, &quot;Polymer&quot;]</p>
+<h2 id="-">}</h2>
+<h2 id="-setup-aurelia-doc-section-1-version-1-0-0-"><a href="aurelia-doc://section/1/version/1.0.0">Setup</a></h2>
+<p>The first step is obtaining Polymer, which is generally done with the <a href="http://bower.io/">Bower</a> package manager. The following <code>bower.json</code> will install Polymer&#39;s base and material design elements.</p>
+<p><code-listing heading="Bower Config">
+  <source-code lang="JSON">
+    {
+      &quot;name&quot;: &quot;my-aurelia-polymer-project&quot;,
+      &quot;private&quot;: true,
+      &quot;dependencies&quot;: {
+        &quot;polymer&quot;: &quot;Polymer/polymer#^1.2.0&quot;,
+        &quot;paper-elements&quot;: &quot;PolymerElements/paper-elements#^1.0.6&quot;,
+        &quot;iron-elements&quot;: &quot;PolymerElements/iron-elements#^1.0.4&quot;,
+        &quot;webcomponentsjs&quot;: &quot;webcomponents/webcomponentsjs#^0.7.20&quot;
+      }
+    }
+  </source-code>
+</code-listing></p>
+<p>Aurelia must also be configured to use the HTML Imports template loader and the <code>aurelia-polymer</code> plugin, both of which can be installed with JSPM.</p>
+<p><code-listing heading="Plugin Installation">
+  <source-code lang="Shell">
+    $ jspm install aurelia-html-import-template-loader
+    $ jspm install &#39;aurelia-polymer@^1.0.0-beta&#39;
+  </source-code>
+</code-listing></p>
+<p>In <code>index.html</code>, Polymer and the webcomponents.js polyfills need to be loaded before Aurelia is, so that the <code>aurelia-polymer</code> plugin can hook into Polymer&#39;s element registration system.</p>
+<p><code-listing heading="Loading Web Components and Polymer">
+  <source-code lang="HTML">
+    &lt;!DOCTYPE html&gt;
+    <html>
+      <head>
+        <!-- ... -->
+        <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+        <link rel="import" href="bower_components/polymer/polymer.html">
+      </head>
+      <!-- ... -->
+    </html>
+  </source-code>
+</code-listing></p>
+<p>It&#39;s also a good idea to wait until the web components polyfill has loaded Polymer to bootstrap Aurelia. Instead of directly importing <code>aurelia-bootstrapper</code>, wait until the <code>WebComponentsReady</code> event fires in <code>index.html</code>.</p>
+<p><code-listing heading="Bootstrapping Aurelia">
+  <source-code lang="HTML">
+    &lt;!DOCTYPE html&gt;
+    <script>
+      document.addEventListener(&#39;WebComponentsReady&#39;, function() {
+        System.import(&#39;aurelia-bootstrapper&#39;);
+      });
+    </script>
+  </source-code>
+</code-listing></p>
+<p>In <code>main.js</code>, the two Aurelia plugins installed before need to be loaded as well.</p>
+<p><code-listing heading="Configuring Aurelia">
+  <source-code lang="ES 2015/2016">
+    export function configure(aurelia) {
+      aurelia.use
+        .standardConfiguration()
+        .developmentLogging();</p>
+<pre><code>  aurelia.use.plugin(<span class="hljs-symbol">'aurelia</span>-polymer');
+  aurelia.use.plugin(<span class="hljs-symbol">'aurelia</span>-html-import-template-loader');
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(a =&gt; a.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    import {Aurelia} from &#39;aurelia-framework&#39;;</p>
+<pre><code>export function configure(aurelia: <span class="hljs-type">Aurelia</span>): void {
+  aurelia.use
+    .standardConfiguration<span class="hljs-literal">()</span>
+    .developmentLogging<span class="hljs-literal">()</span>;
+
+  aurelia.use.plugin(<span class="hljs-symbol">'aurelia</span>-polymer');
+  aurelia.use.plugin(<span class="hljs-symbol">'aurelia</span>-html-import-template-loader');
+
+  aurelia.start<span class="hljs-literal">()</span>.<span class="hljs-keyword">then</span>(a =&gt; a.setRoot<span class="hljs-literal">()</span>);
+}
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>At this point, Aurelia and Polymer are ready to go. The examples below incorporate various Polymer elements into the Aurelia skeleton navigation starter.</p>
+<h2 id="-importing-elements-aurelia-doc-section-2-version-1-0-0-"><a href="aurelia-doc://section/2/version/1.0.0">Importing Elements</a></h2>
+<p>With the normal Aurelia template loader, nothing is allowed outside the root <code>&lt;template&gt;</code> element. When using HTML imports, however, the import statements must be before the <code>&lt;template&gt;</code>.</p>
+<p><code-listing heading="Using HTML Imports">
+  <source-code lang="HTML">
+    <link rel="import" href="/bower_components/paper-drawer-panel/paper-drawer-panel.html">
+    <link rel="import" href="/bower_components/paper-toolbar/paper-toolbar.html">
+    <link rel="import" href="/bower_components/paper-menu/paper-menu.html">
+    <link rel="import" href="/bower_components/paper-item/paper-item.html">
+    <link rel="import" href="/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+    <link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="/bower_components/iron-icons/iron-icons.html"></p>
+<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- ... --&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<h2 id="-data-binding-aurelia-doc-section-3-version-1-0-0-"><a href="aurelia-doc://section/3/version/1.0.0">Data Binding</a></h2>
+<p>Given the imports above, this shows how to implement a basic layout in <code>app.html</code> with Polymer components.</p>
+<p><code-listing heading="Using Polymer Elements">
+  <source-code lang="HTML">
+    <template>
+      <paper-drawer-panel force-narrow>
+        <div drawer>
+          <paper-toolbar class="paper-header">
+            <span>Menu</span>
+          </paper-toolbar>
+          <paper-menu>
+            <paper-item repeat.for="row of router.navigation" active.bind="row.isActive">
+              <a href.bind="row.href">${row.title}</a>
+            </paper-item>
+          </paper-menu>
+        </div>
+        <div main>
+          <paper-toolbar class="paper-header">
+            <paper-icon-button icon="menu" tabindex="1" paper-drawer-toggle></paper-icon-button>
+            <div class="title">${router.title}</div>
+            <span if.bind="router.isNavigating"><iron-icon icon="autorenew"/></span>
+          </paper-toolbar>
+          <div>
+            <router-view></router-view>
+          </div>
+        </div>
+      </paper-drawer-panel>
+    </template>
+  </source-code>
+</code-listing></p>
+<p>Notice that Poylmer elements such as <code>&lt;paper-drawer-panel&gt;</code> or <code>&lt;paper-menu&gt;</code>, once imported, can be used just like
+normal HTML elements.</p>
+<p>All of the standard Aurelia binding syntax continues to work as well. For example,
+<code>repeat.for</code> is used to populate menu items from the Aurelia router. The <code>active.bind</code>
+binding on the <code>&lt;paper-item&gt;</code> elements in the navigation menu shows that attributes
+defined by Polymer are also supported by Aurelia.</p>
+<h2 id="-forms-and-two-way-binding-aurelia-doc-section-4-version-1-0-0-"><a href="aurelia-doc://section/4/version/1.0.0">Forms and Two-Way Binding</a></h2>
+<p>The updated <code>welcome.html</code> uses Polymer input elements to enhance its form.</p>
+<p><code-listing heading="Using Polymer in a Form">
+  <source-code lang="HTML">
+    <link rel="import" href="../bower_components/paper-input/paper-input.html">
+    <link rel="import" href="../bower_components/iron-form/iron-form.html"></p>
+<pre><code><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">section</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"au-animate"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>$</span><span class="hljs-template-variable">{heading}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">is</span>=<span class="hljs-string">"iron-form"</span> <span class="hljs-attr">role</span>=<span class="hljs-string">"form"</span> <span class="hljs-attr">submit.delegate</span>=<span class="hljs-string">"submit()"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"form-group"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">"fn"</span>&gt;</span>First Name<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">paper-input</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"fn"</span> <span class="hljs-attr">value.two-way</span>=<span class="hljs-string">"firstName"</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">"first name"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">paper-input</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"form-group"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">"ln"</span>&gt;</span>Last Name<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">paper-input</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"fn"</span> <span class="hljs-attr">value.two-way</span>=<span class="hljs-string">"lastName"</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">"last name"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">paper-input</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"form-group"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">label</span>&gt;</span>Full Name<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"help-block"</span>&gt;</span>$</span><span class="hljs-template-variable">{fullName | upper}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"btn btn-default"</span>&gt;</span>Submit<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>While not strictly necessary in this case, making the form an <code>&lt;iron-form&gt;</code> ensures
+that Polymer input elements are submitted along with native HTML elements.</p>
+<p>Note that the <code>&lt;paper-input&gt;</code> elements have <code>.two-way</code> bindings, not just <code>.bind</code>.
+With the exception of native HTML form elements, Aurelia defaults to one-way bindings,
+so two-way data binding must be specified explicitly.</p>
+<p>A normal <code>&lt;button&gt;</code> element is used with Aurelia&#39;s <code>submit.delegate</code> binding, since
+Polymer elements cannot submit forms.</p>
+<p>If form submission semantics were not needed, another option would be to
+use a <code>click.delegate</code> on a Polymer button instead.</p>
+<p><code-listing heading="Polymer Element with Event Delegation">
+  <source-code lang="HTML">
+    <paper-button raised click.delegate="submit()">Submit</paper-button>
+  </source-code>
+</code-listing></p>
+<h2 id="-how-the-plugin-works-aurelia-doc-section-5-version-1-0-0-"><a href="aurelia-doc://section/5/version/1.0.0">How the Plugin Works</a></h2>
+<p>The <code>aurelia-polymer</code> plugin is fairly simple. For each Polymer element, it
+registers the element&#39;s properties and what events they support with the
+<code>EventManager</code> in Aurelia&#39;s binding component. The core of the plugin, the
+<a href="https://github.com/roguePanda/aurelia-polymer/blob/1.0.0-beta.1.0.1/src/index.js#L7"><code>registerElement</code></a>
+function, loops over all properties of the element and any behavior it implements
+so that the Aurelia binding engine will register event listeners properly.</p>
+<p><code-listing heading="Element Registration">
+  <source-code lang="ES 2015/2016">
+    var propertyConfig = {&#39;bind-value&#39;: [&#39;change&#39;, &#39;input&#39;]}; // Not explicitly listed for all elements that use it</p>
+<pre><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handleProp</span><span class="hljs-params">(propName, prop)</span> </span>{
+  <span class="hljs-keyword">if</span> (prop.notify) {
+    propertyConfig[propName] = [<span class="hljs-string">'change'</span>, <span class="hljs-string">'input'</span>];
+  }
+}
+
+Object.keys(prototype.properties).<span class="hljs-keyword">forEach</span>(propName =&gt; handleProp(propName, prototype.properties[propName]));
+
+prototype.behaviors.<span class="hljs-keyword">forEach</span>(behavior =&gt; {
+  <span class="hljs-keyword">if</span> (typeof behavior.properties != <span class="hljs-string">'undefined'</span>) {
+    Object.keys(behavior.properties).<span class="hljs-keyword">forEach</span>(propName =&gt; handleProp(propName, behavior.properties[propName]));
+  }
+});
+
+eventManager.registerElementConfig({
+  tagName: prototype.is,
+  properties: propertyConfig
+});
+</code></pre><p>  </source-code>
+  <source-code lang="TypeScript">
+    var propertyConfig = {&#39;bind-value&#39;: [&#39;change&#39;, &#39;input&#39;]}; // Not explicitly listed for all elements that use it</p>
+<pre><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handleProp</span><span class="hljs-params">(propName, prop)</span> </span>{
+  <span class="hljs-keyword">if</span> (prop.notify) {
+    propertyConfig[propName] = [<span class="hljs-string">'change'</span>, <span class="hljs-string">'input'</span>];
+  }
+}
+
+Object.keys(prototype.properties).<span class="hljs-keyword">forEach</span>(propName =&gt; handleProp(propName, prototype.properties[propName]));
+
+prototype.behaviors.<span class="hljs-keyword">forEach</span>(behavior =&gt; {
+  <span class="hljs-keyword">if</span> (typeof behavior.properties != <span class="hljs-string">'undefined'</span>) {
+    Object.keys(behavior.properties).<span class="hljs-keyword">forEach</span>(propName =&gt; handleProp(propName, behavior.properties[propName]));
+  }
+});
+
+eventManager.registerElementConfig({
+  tagName: prototype.is,
+  properties: propertyConfig
+});
+</code></pre><p>  </source-code>
+</code-listing></p>
+<p>Element properties marked with <code>notify</code> are eligible for Polymer&#39;s two-way data
+binding system and also trigger a <code>{property-name}-changed</code> event. This corresponds
+to the <code>input</code> and <code>change</code> events in Aurelia.</p>
+<p>Whenever a Polymer element is imported, it triggers a call to <code>Polymer.telemetry._registrate</code>,
+which adds the element prototype to a list of registered Polymer elements. The
+<code>aurelia-polymer</code> plugin replaces this registration function with one that also
+calls <code>registerElement</code> on the prototype so that it is configured with Aurelia
+as well. The need to override this function is why Polymer must be loaded before
+the plugin is.</p>
