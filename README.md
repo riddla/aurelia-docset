@@ -8,6 +8,6 @@ https://kapeli.com/dash
 
 http://aurelia.io
 
-* work
-* in
-* progress
+* work in progress:
+
+![](current_look.png?raw=true "Current look")
