@@ -1,4 +1,4 @@
-# Dash docset for Aurelia (http://aurelia.io) #
+# Dash docset for Aurelia #
 
 > Dash is an API Documentation Browser and Code Snippet Manager
 
