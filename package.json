@@ -1,6 +1,6 @@
 {
   "name": "aurelia-docset",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Generate a Dash (https://kapeli.com/dash) docset for Aurelia (http://aurelia.io)",
   "repository": {
     "type": "git",
@@ -15,6 +15,7 @@
   "license": "MIT",
   "devDependencies": {
     "gulp": "3.9.1",
+    "gulp-bump": "^1.0.0",
     "gulp-debug": "2.1.2",
     "gulp-markdown": "1.2.0",
     "gulp-mustache": "^2.2.0",

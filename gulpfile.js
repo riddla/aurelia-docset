@@ -4,6 +4,7 @@ var debug = require('gulp-debug');
 var tap = require('gulp-tap');
 var wrapper = require('gulp-wrapper');
 var fs = require('fs');
+var bump = require('gulp-bump');
 
 var frontmatterPattern = /---([\s\S]+)---[\s\S]/;
 
@@ -59,4 +60,20 @@ gulp.task('convert', function () {
             footer: footer
         }))
         .pipe(gulp.dest('./aurelia.docset/Contents/Resources/Documents/'));
+});
+
+var yargs = require('yargs');
+
+var argv = yargs.argv,
+    validBumpTypes = "major|minor|patch|prerelease".split("|"),
+    bumpVersion = (argv.bump || 'patch').toLowerCase();
+
+if (validBumpTypes.indexOf(bumpVersion) === -1) {
+    throw new Error('Unrecognized bump "' + bump + '".');
+}
+
+gulp.task('bump-version', function () {
+    return gulp.src(['./package.json', './bower.json'])
+        .pipe(bump({ type: bumpVersion })) //major|minor|patch|prerelease
+        .pipe(gulp.dest('./'));
 });
