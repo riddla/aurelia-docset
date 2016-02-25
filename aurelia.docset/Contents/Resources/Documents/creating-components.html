@@ -103,20 +103,6 @@ a.au-button,au-dropdown>a,au-offscreen button,au-offscreen offscreen-host>button
 </style>
 <au-preview>
     <au-doc-section>
-<hr>
-<p>{
-  &quot;name&quot;: &quot;Creating Components&quot;,
-  &quot;culture&quot;: &quot;en-US&quot;,
-  &quot;description&quot;: &quot;Components are the basic building blocks of all Aurelia applications. In this article you&#39;ll learn how to build basic components using dependency injection and the component lifecycle.&quot;,
-  &quot;engines&quot; : { &quot;aurelia-doc&quot; : &quot;^1.0.0&quot; },
-  &quot;author&quot;: {
-      &quot;name&quot;: &quot;Rob Eisenberg&quot;,
-      &quot;url&quot;: &quot;<a href="http://robeisenberg.com">http://robeisenberg.com</a>&quot;
-  },
-  &quot;contributors&quot;: [],
-  &quot;translators&quot;: [],
-  &quot;keywords&quot;: [&quot;Components&quot;, &quot;MVVM&quot;, &quot;Separation of Concerns&quot;]</p>
-<h2 id="-">}</h2>
 <h2 id="-creating-a-component-aurelia-doc-section-1-version-1-0-0-"><a href="aurelia-doc://section/1/version/1.0.0">Creating A Component</a></h2>
 <p>In Aurelia, user interface components are composed of <em>view</em> and <em>view-model</em> pairs. The view is written with HTML and is rendered into the DOM. The view-model is written with ${context.language.name} and provides data and behavior to the view. The Templating Engine along with Dependency Injection are responsible for creating these pairs and enforcing a predictable lifecycle for the component. Once instantiated, Aurelia&#39;s powerful <em>databinding</em> links the two pieces together allowing changes in your view-model to be reflected in the view and changes in your view to reflected in your view-model. This Separation of Concerns is great for developer/designer collaboration, maintainability, architectural flexibility, and even source control.</p>
 <p>To create a UI component, you need only create two files, one for each of the component parts. Let&#39;s create a simple &quot;Hello&quot; component. To do that we&#39;ll need a <em>hello${context.language.fileExtension}</em> for our view-model and <em>hello.html</em> for our view. Here&#39;s the source for each:</p>

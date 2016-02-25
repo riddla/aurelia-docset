@@ -103,20 +103,6 @@ a.au-button,au-dropdown>a,au-offscreen button,au-offscreen offscreen-host>button
 </style>
 <au-preview>
     <au-doc-section>
-<hr>
-<p>{
-  &quot;name&quot;: &quot;App Configuration and Startup&quot;,
-  &quot;culture&quot;: &quot;en-US&quot;,
-  &quot;description&quot;: &quot;In this article you&#39;ll learn the various ways to bootstrap and configure Aurelia, along with different mechanisms for controlling the initial render strategy.&quot;,
-  &quot;engines&quot; : { &quot;aurelia-doc&quot; : &quot;^1.0.0&quot; },
-  &quot;author&quot;: {
-      &quot;name&quot;: &quot;Rob Eisenberg&quot;,
-      &quot;url&quot;: &quot;<a href="http://robeisenberg.com">http://robeisenberg.com</a>&quot;
-  },
-  &quot;contributors&quot;: [],
-  &quot;translators&quot;: [],
-  &quot;keywords&quot;: [&quot;Framework&quot;, &quot;Configuration&quot;, &quot;Startup&quot;]</p>
-<h2 id="-">}</h2>
 <h2 id="-bootstrapping-aurelia-aurelia-doc-section-1-version-1-0-0-"><a href="aurelia-doc://section/1/version/1.0.0">Bootstrapping Aurelia</a></h2>
 <p>Most platforms have a &quot;main&quot; or entry point for code execution. Aurelia is no different. If you&#39;ve read the Getting Started Guide, then you&#39;ve seen the <code>aurelia-app</code> attribute. Simply place this on an HTML element and Aurelia&#39;s bootstrapper will load an <em>app${context.language.fileExtension}</em> and <em>app.html</em>, databind them together and inject them into the DOM element on which you placed that attribute.</p>
 <p>Often times you want to configure the framework or run some code prior to displaying anything to the user though. So chances are, as your project progresses, you will migrate towards needing some startup configuration. In order to do this, you can provide a value for the <code>aurelia-app</code> attribute that points to a configuration module. This module should export a single function named <code>configure</code>. Aurelia invokes your <code>configure</code> function, passing it the Aurelia object which you can then use to configure the framework yourself and decide what, when, and where to display your UI. Here&#39;s an example configuration file showing the standard configuration, the same configuration that is equivalent to what you would get when using <code>aurelia-app</code> without a value:</p>

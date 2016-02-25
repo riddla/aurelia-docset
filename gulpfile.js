@@ -5,22 +5,50 @@ var tap = require('gulp-tap');
 var wrapper = require('gulp-wrapper');
 var fs = require('fs');
 
+var frontmatterPattern = /---([\s\S]+)---[\s\S]/;
+
+function getFrontmatter(content) {
+
+    var matches = content.match(frontmatterPattern);
+
+    if (matches) {
+        return JSON.parse(matches[1]);
+    }
+
+    return {};
+}
+
+function removeFrontmatter(content) {
+
+    return content.replace(frontmatterPattern, '');
+}
+
 gulp.task('convert', function () {
 
     var header = fs.readFileSync('./aurelia-article-header.html', "utf8");
     var footer = fs.readFileSync('./aurelia-article-footer.html', "utf8");
 
     var sqlite3 = require('sqlite3').verbose();
-    //var db = new sqlite3.Database('./aurelia.docset/Contents/Resources/docSet.dsidx');
-    
-    gulp.src('./doc/article/en-US/a-production-setup.md')
-    //gulp.src('./doc/article/en-US/*.md')
+    var table = 'searchIndex';
+    var db = new sqlite3.Database('./aurelia.docset/Contents/Resources/docSet.dsidx');
+    db.run('DELETE FROM ' + table);
+
+    // gulp.src('./doc/article/en-US/a-production-setup.md')
+    gulp.src('./doc/article/en-US/*.md')
     // extract frontmatter
         .pipe(tap(function (file) {
-            console.dir(file.contents.toString());
+            var content = file.contents.toString();
+            var frontmatter = getFrontmatter(content);
+
+            file.contents = new Buffer(removeFrontmatter(content));
+
+            var sql = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('" + frontmatter.name + "', 'Guide', '" + file.relative.replace(/\.md/, '.html') + "');";
+            console.log(sql);
+            db.run(sql);
+
+            return file;
         }))
         .pipe(markdown({
-            // optional : marked options
             highlight: function (code) {
                 return require('highlight.js').highlightAuto(code).value;
             }
